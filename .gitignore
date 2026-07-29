@@ -40,12 +40,5 @@ coverage/
 # Local configuration
 *.local
 
-# Firebase (if added later)
-.firebase/
-.firebaserc
-
-# Netlify/Vercel
-.netlify/
-
 # Misc
 *.log

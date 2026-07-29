@@ -1,0 +1,15 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.layout-container {
+  display: flex;
+}
+
+.layout-content {
+  flex: 1;
+  padding: 2rem;
+  background: #f8fafc;
+  min-height: calc(100vh - 64px);
+}
