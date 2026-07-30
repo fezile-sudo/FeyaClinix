@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { LayoutNavbar } from '../../shared/components/layout-navbar/layout-navbar';
 import { LayoutSidebar } from '../../shared/components/layout-sidebar/layout-sidebar';
+
 
 @Component({
   selector: 'app-dashboard-layout',
@@ -14,4 +15,13 @@ import { LayoutSidebar } from '../../shared/components/layout-sidebar/layout-sid
   templateUrl: './dashboard-layout.html',
   styleUrl: './dashboard-layout.scss'
 })
-export class DashboardLayout {}
+export class DashboardLayout {
+
+  sidebarCollapsed = signal(false);
+
+  toggleSidebar() {
+    this.sidebarCollapsed.update(value => !value);
+  }
+
+
+}

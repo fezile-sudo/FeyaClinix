@@ -1,11 +1,19 @@
-<app-layout-navbar />
+<app-layout-navbar
+  (toggleSidebar)="toggleSidebar()">
+</app-layout-navbar>
+
 
 <div class="layout-container">
 
-  <app-layout-sidebar />
+  <app-layout-sidebar
+    [collapsed]="sidebarCollapsed()">
+  </app-layout-sidebar>
+
 
   <main class="layout-content">
+
     <router-outlet />
+
   </main>
 
 </div>

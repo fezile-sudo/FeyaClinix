@@ -1,19 +1,20 @@
-<aside class="sidebar">
+<aside class="sidebar" [class.collapsed]="collapsed()">
 
   <div class="logo">
-    🩺 FeyaClinix
+    <span class="logo-icon">🩺</span>
+    @if (!collapsed()) {<span class="logo-text">FeyaClinix</span>}
   </div>
 
   <nav>
 
-    <a>🏠 Dashboard</a>
-    <a>👨‍⚕️ Doctors</a>
-    <a>👥 Patients</a>
-    <a>📅 Appointments</a>
-    <a>🗓 Calendar</a>
-    <a>📊 Reports</a>
-    <a>⚙ Settings</a>
+  @for (item of menuItems; track item.route) {
 
-  </nav>
+    <a [routerLink]="item.route" routerLinkActive="active">
+      <span class="icon">{{ item.icon }}</span>
+      @if (!collapsed()) {<span>{{ item.label }}</span>}
+    </a>
 
+  }
+
+</nav>
 </aside>

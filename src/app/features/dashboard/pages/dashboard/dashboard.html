@@ -1,7 +1,11 @@
-<section class="dashboard">
-  <h1>Welcome to FeyaClinix</h1>
+<div class="stats-grid">
 
-  <p>
-    Healthcare management made simple.
-  </p>
-</section>
+  <app-stat-card title="Doctors" [value]="18" icon="👨‍⚕️" subtitle="+2 this month"></app-stat-card>
+
+  <app-stat-card title="Patients" [value]="324" icon="👥" subtitle="+15 this week"></app-stat-card>
+
+  <app-stat-card title="Appointments" [value]="26" icon="📅" subtitle="Today"></app-stat-card>
+
+  <app-stat-card title="Available Beds" [value]="12" icon="🛏️" subtitle="Currently free"></app-stat-card>
+
+</div>

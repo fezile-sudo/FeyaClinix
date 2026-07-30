@@ -1,0 +1,25 @@
+.dashboard {
+  padding: 2rem;
+}
+
+.welcome {
+  margin-bottom: 2rem;
+
+  h1 {
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+    color: #1e293b;
+  }
+
+  p {
+    color: #64748b;
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+
