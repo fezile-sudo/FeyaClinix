@@ -4,8 +4,68 @@
 
   <app-stat-card title="Patients" [value]="324" icon="👥" subtitle="+15 this week"></app-stat-card>
 
-  <app-stat-card title="Appointments" [value]="26" icon="📅" subtitle="Today"></app-stat-card>
+  <app-stat-card 
+        title="Today's Appointments"
+        [value]="todayAppointments"
+        icon="📅"
+        subtitle="Scheduled today">
+  </app-stat-card>
 
   <app-stat-card title="Available Beds" [value]="12" icon="🛏️" subtitle="Currently free"></app-stat-card>
 
+</div>
+
+
+<div class="appointments-panel">
+
+  <h3>Upcoming Appointments</h3>
+
+  <table>
+
+    <thead>
+      <tr>
+        <th>Patient</th>
+        <th>Doctor</th>
+        <th>Department</th>
+        <th>Time</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      @for (appointment of upcomingAppointments; track appointment.id) {
+
+        <tr>
+          <td>{{ appointment.patientName }}</td>
+          <td>{{ appointment.doctorName }}</td>
+          <td>{{ appointment.department }}</td>
+          <td>{{ appointment.time }}</td>
+
+          <td>
+            <span
+              class="status-badge"
+              [class.confirmed]="appointment.status === 'Confirmed'"
+              [class.pending]="appointment.status === 'Pending'"
+              [class.cancelled]="appointment.status === 'Cancelled'">
+              {{ appointment.status }}
+            </span>
+          </td>
+
+        </tr>
+
+      } @empty {
+        <tr>
+          <td colspan="5">No upcoming appointments</td>
+        </tr>
+      }
+
+    </tbody>
+  </table>
+
+  <div class="view-all-container">
+        <a routerLink="/appointments" class="view-all-btn">
+        View All Appointments →
+      </a>
+</div>
 </div>
