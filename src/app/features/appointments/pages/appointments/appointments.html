@@ -3,32 +3,18 @@
   <h2>Appointments</h2>
 
   <div class="header-actions">
-
-    <input
-      type="text"
-      class="search-input"
-      placeholder="Search patient, doctor or department..."
-      [(ngModel)]="searchTerm">
-
-    <select
-      class="filter-select"
-      [(ngModel)]="selectedStatus">
-
+    <input type="text" class="search-input" placeholder="Search patient, doctor or department..." [(ngModel)]="searchTerm">
+    <select class="filter-select" [(ngModel)]="selectedStatus">
       <option value="All">All Status</option>
       <option value="Pending">Pending</option>
       <option value="Confirmed">Confirmed</option>
       <option value="Cancelled">Cancelled</option>
-
     </select>
 
-    <button
-      class="add-btn"
-      (click)="openModal()">
+    <button class="add-btn" (click)="openModal()">
       + New Appointment
     </button>
-
   </div>
-
 </div>
 
 <table>
@@ -52,9 +38,7 @@
     <td>{{ appointment.date | date:'dd MMM yyyy' }}</td>
     <td>{{ appointment.time }}</td>
      <td>
-      <span
-        class="status-badge"
-        [ngClass]="{
+      <span class="status-badge" [ngClass]="{
           'confirmed': appointment.status === 'Confirmed',
           'pending': appointment.status === 'Pending',
           'cancelled': appointment.status === 'Cancelled'
@@ -77,96 +61,59 @@
 </table>
 
 <div class="modal-backdrop" *ngIf="showModal">
-
   <div class="modal">
-
     <div class="modal-header">
       <h3>New Appointment</h3>
-
       <button  class="close-btn" (click)="closeModal()">
         ✕
       </button>
     </div>
 
-
     <div class="modal-body">
-
       <form [formGroup]="appointmentForm">
-
         <div class="form-group">
          <label for="patientName">Patient Name</label> 
-          <input 
-            type="text" 
-            formControlName="patientName">
+          <input type="text" formControlName="patientName">
         </div>
-
 
         <div class="form-group">
           <label for="doctorName">Doctor Name</label>
-          <input 
-            type="text" 
-            formControlName="doctorName">
+          <input type="text" formControlName="doctorName">
         </div>
-
 
         <div class="form-group">
           <label for="department">Department</label>
-          <input 
-            type="text" 
-            formControlName="department">
+          <input type="text" formControlName="department">
         </div>
-
 
         <div class="form-group">
           <label for="date">Date</label>
-          <input 
-            type="date" 
-            formControlName="date">
+          <input type="date" formControlName="date">
         </div>
-
 
         <div class="form-group">
           <label for="time">Time</label>
-          <input 
-            type="time" 
-            formControlName="time">
+          <input type="time" formControlName="time">
         </div>
 
-
         <div class="form-group">
-       
-
           <select formControlName="status">
             <option>Pending</option>
             <option>Confirmed</option>
             <option>Cancelled</option>
           </select>
-
         </div>
-
       </form>
-
     </div>
 
-
     <div class="modal-footer">
-
-      <button 
-        class="cancel-btn"
-        (click)="closeModal()">
+      <button class="cancel-btn" (click)="closeModal()">
         Cancel
       </button>
 
-
-      <button
-        class="save-btn"
-        type="button"
-        (click)="saveAppointment()">
+      <button class="save-btn" type="button" (click)="saveAppointment()">
         {{ isEditing ? 'Update Appointment' : 'Save Appointment' }}
       </button>
-
     </div>
-
   </div>
-
 </div>

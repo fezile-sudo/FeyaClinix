@@ -7,20 +7,26 @@ export const routes: Routes = [
   {
     path: '',
     component: DashboardLayout,
-    children: [
-      {
-        path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full'
-      },
-      {
-        path: 'dashboard',
-        component: Dashboard
-      },
-      {
-        path: 'appointments',
-        component: AppointmentsComponent
-      }
-    ]
+   children: [
+  {
+    path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full'
+  },
+  {
+    path: 'dashboard',
+    component: Dashboard
+  },
+  {
+    path: 'appointments',
+    component: AppointmentsComponent
+  },
+  {
+    path: 'patients',
+    loadChildren: () =>
+      import('./features/patients/patients.routes')
+        .then(m => m.PATIENT_ROUTES)
+  }
+]
   }
 ];

@@ -2,7 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { StatCard } from '../../components/stat-card/stat-card';
 import { AppointmentService } from '../../../appointments/services/appointment.service';
 import { Appointment } from '../../../appointments/models/appointment.model';
+import { PatientService } from '../../../patients/services/patient';
+import { Patient } from '../../../patients/models/patient.model';
 import { RouterLink } from '@angular/router';
+
+
 
 @Component({
   selector: 'app-dashboard',
@@ -16,9 +20,17 @@ import { RouterLink } from '@angular/router';
 })
 export class Dashboard implements OnInit {
 
- todayAppointments = 999;
+ todayAppointments = 0;
 
  upcomingAppointments: Appointment[] = [];
+
+ recentPatients: Patient[] = [];
+
+ totalPatients = 0;
+
+ activePatients = 0;
+
+ inactivePatients = 0;
 
  private getTodayDate(): string {
 
@@ -28,9 +40,10 @@ export class Dashboard implements OnInit {
 
 }
 
-  constructor(
-    private appointmentService: AppointmentService
-  ) {}
+ constructor(
+  private appointmentService: AppointmentService,
+  private patientService: PatientService
+) {}
 
 ngOnInit(): void {
 
@@ -39,11 +52,17 @@ ngOnInit(): void {
 
 
   this.upcomingAppointments =
-    this.appointmentService.getAppointments()
-      .filter(appointment =>
-        appointment.date >= this.getTodayDate()
-      )
-      .slice(0, 5);
+    this.appointmentService.getAppointments().filter(appointment =>appointment.date >= this.getTodayDate()).slice(0, 5);
+
+  const patients = this.patientService.getPatients();
+
+  this.totalPatients = patients.length;
+
+  this.activePatients = patients.filter(patient => patient.status === 'Active').length;
+
+  this.inactivePatients = patients.filter().length;
+
+  this.recentPatients = patients.slice(-5).reverse();
 
 }
 

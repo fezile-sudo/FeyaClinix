@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-
 import { Appointment } from '../../models/appointment.model';
 import { AppointmentService } from '../../services/appointment.service';
 import { FormsModule } from '@angular/forms';
@@ -36,9 +35,7 @@ export class AppointmentsComponent implements OnInit {
       appointment.department.toLowerCase().includes(this.searchTerm.toLowerCase());
 
     const matchesStatus =
-      this.selectedStatus === 'All' ||
-      appointment.status === this.selectedStatus;
-
+      this.selectedStatus === 'All' || appointment.status === this.selectedStatus;
     return matchesSearch && matchesStatus;
 
   });
@@ -51,7 +48,6 @@ export class AppointmentsComponent implements OnInit {
   editingAppointmentId: number | null = null; 
 
   appointmentForm!: ReturnType<FormBuilder['group']>;
-
 
 
   constructor(
@@ -153,10 +149,7 @@ if (index !== -1) {
 
 deleteAppointment(id: number): void {
 
-  const confirmed = confirm(
-    'Are you sure you want to delete this appointment?'
-  );
-
+  const confirmed = confirm('Are you sure you want to delete this appointment?');
   if (!confirmed) {
     return;
   }
@@ -164,16 +157,13 @@ deleteAppointment(id: number): void {
   this.appointments = this.appointments.filter(
     appointment => appointment.id !== id
   );
-
   this.appointmentService.saveAppointments();
 }
-
 
 editAppointment(appointment: Appointment): void {
 
   this.isEditing = true;
   this.editingAppointmentId = appointment.id;
-
   this.appointmentForm.patchValue({
     patientName: appointment.patientName,
     doctorName: appointment.doctorName,

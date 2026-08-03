@@ -1,0 +1,28 @@
+.form-card {
+  margin: 30px;
+  padding: 30px;
+}
+
+.row {
+  display: flex;
+  gap: 20px;
+}
+
+.row mat-form-field {
+  flex: 1;
+}
+
+.full-width {
+  width: 100%;
+}
+
+h2 {
+  margin-top: 25px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 25px;
+}

@@ -98,10 +98,8 @@ tr:nth-child(even) {
   display: flex;
   justify-content: center;
   align-items: center;
-
   z-index: 1000;
 }
-
 
 .modal {
   background: white;
@@ -110,13 +108,11 @@ tr:nth-child(even) {
   padding: 20px;
 }
 
-
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-
 
 .close-btn {
   border: none;
@@ -125,26 +121,22 @@ tr:nth-child(even) {
   cursor: pointer;
 }
 
-
 .form-group {
   margin-bottom: 15px;
   display: flex;
   flex-direction: column;
 }
 
-
 .form-group input,
 .form-group select {
   padding: 8px;
 }
-
 
 .modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
 }
-
 
 .cancel-btn,
 .save-btn {
@@ -154,12 +146,10 @@ tr:nth-child(even) {
   cursor: pointer;
 }
 
-
 .cancel-btn {
   background: #6b7280;
   color: white;
 }
-
 
 .save-btn {
   background: #2563eb;
@@ -201,12 +191,9 @@ tr:nth-child(even) {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-
   min-width: 100px;
   padding: 6px 14px;
-
   border-radius: 20px;
-
   font-size: 13px;
   font-weight: 600;
 }

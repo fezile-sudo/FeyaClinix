@@ -15,11 +15,8 @@ export class AppointmentService {
   }
 
   private loadAppointments(): void {
-
     const storedAppointments = localStorage.getItem(this.storageKey);
-
     if (storedAppointments) {
-
       this.appointments = JSON.parse(storedAppointments);
 
     } else {
@@ -42,6 +39,23 @@ export class AppointmentService {
           date: '2026-07-30',
           time: '11:30 AM',
           status: 'Pending'
+        },
+        {id: 3,
+          patientName: 'Sikhangele Gulwa',
+          doctorName: 'Dr. Deysel',
+          department: 'Dematologist',
+          date: '2026-08-12',
+          time: '10:00 AM',
+          status: 'Confirmed'
+        },
+        {
+          id: 4,
+          patientName: 'Aphiwe Gulwa',
+          doctorName: 'Dr. Bandla',
+          department: 'Dentist',
+          date: '2026-08-27',
+          time: '11:30 AM',
+          status: 'Pending'
         }
       ];
 
@@ -55,13 +69,9 @@ export class AppointmentService {
   }
 
   saveAppointments(): void {
-    localStorage.setItem(
-      this.storageKey,
-      JSON.stringify(this.appointments)
+    localStorage.setItem(this.storageKey, JSON.stringify(this.appointments)
     );
   }
-
-
 
  getTodayAppointmentsCount(): number {
 
@@ -70,8 +80,6 @@ export class AppointmentService {
   const formattedToday =
     `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
-
-
   return this.appointments.filter(
     appointment => appointment.date === formattedToday
   ).length;
@@ -79,18 +87,12 @@ export class AppointmentService {
 }
 
 getConfirmedAppointmentsCount(): number {
-
-  return this.appointments.filter(
-    appointment => appointment.status === 'Confirmed'
-  ).length;
+  return this.appointments.filter( appointment => appointment.status === 'Confirmed').length;
 
 }
 
 getCancelledAppointmentsCount(): number {
-
-  return this.appointments.filter(
-    appointment => appointment.status === 'Cancelled'
-  ).length;
+  return this.appointments.filter(appointment => appointment.status === 'Cancelled').length;
 
 }
 

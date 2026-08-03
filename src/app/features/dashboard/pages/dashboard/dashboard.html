@@ -1,71 +1,148 @@
 <div class="stats-grid">
 
-  <app-stat-card title="Doctors" [value]="18" icon="👨‍⚕️" subtitle="+2 this month"></app-stat-card>
-
-  <app-stat-card title="Patients" [value]="324" icon="👥" subtitle="+15 this week"></app-stat-card>
-
   <app-stat-card 
-        title="Today's Appointments"
-        [value]="todayAppointments"
-        icon="📅"
-        subtitle="Scheduled today">
+    title="Doctors"
+    [value]="18"
+    icon="👨‍⚕️"
+    subtitle="+2 this month">
   </app-stat-card>
 
-  <app-stat-card title="Available Beds" [value]="12" icon="🛏️" subtitle="Currently free"></app-stat-card>
+
+  <app-stat-card 
+    title="Patients"
+    [value]="totalPatients"
+    icon="👥"
+    subtitle="Registered patients">
+  </app-stat-card>
+
+
+  <app-stat-card 
+    title="Active Patients"
+    [value]="activePatients"
+    icon="✅"
+    subtitle="Currently active">
+  </app-stat-card>
+
+
+  <app-stat-card 
+    title="Inactive Patients"
+    [value]="inactivePatients"
+    icon="⚪"
+    subtitle="Inactive records">
+  </app-stat-card>
+
+
+  <app-stat-card 
+    title="Today's Appointments"
+    [value]="todayAppointments"
+    icon="📅"
+    subtitle="Scheduled today">
+  </app-stat-card>
+
+
+  <app-stat-card 
+    title="Available Beds"
+    [value]="12"
+    icon="🛏️"
+    subtitle="Currently free">
+  </app-stat-card>
 
 </div>
 
+<div class="dashboard-panels">
+   <div class="appointments-panel">
+    <h3>Upcoming Appointments</h3>
 
-<div class="appointments-panel">
-
-  <h3>Upcoming Appointments</h3>
-
-  <table>
-
-    <thead>
-      <tr>
-        <th>Patient</th>
-        <th>Doctor</th>
-        <th>Department</th>
-        <th>Time</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-
-    <tbody>
-
-      @for (appointment of upcomingAppointments; track appointment.id) {
-
+    <table>
+      <thead>
         <tr>
-          <td>{{ appointment.patientName }}</td>
-          <td>{{ appointment.doctorName }}</td>
-          <td>{{ appointment.department }}</td>
-          <td>{{ appointment.time }}</td>
-
-          <td>
-            <span
-              class="status-badge"
-              [class.confirmed]="appointment.status === 'Confirmed'"
-              [class.pending]="appointment.status === 'Pending'"
-              [class.cancelled]="appointment.status === 'Cancelled'">
-              {{ appointment.status }}
-            </span>
-          </td>
-
+          <th>Patient</th>
+          <th>Doctor</th>
+          <th>Department</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Status</th>
         </tr>
+      </thead>
 
-      } @empty {
+      <tbody>
+        @for (appointment of upcomingAppointments; track appointment.id) {
+
+          <tr>
+            <td>{{ appointment.patientName }}</td>
+
+            <td>{{ appointment.doctorName }}</td>
+
+            <td>{{ appointment.department }}</td>
+
+            <td>{{ appointment.date }}</td>
+
+            <td>{{ appointment.time }}</td>
+
+            <td>
+              <span
+                class="status-badge"
+                [class.confirmed]="appointment.status === 'Confirmed'"
+                [class.pending]="appointment.status === 'Pending'"
+                [class.cancelled]="appointment.status === 'Cancelled'">
+                {{ appointment.status }}
+              </span>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6">
+              No upcoming appointments
+            </td>
+          </tr>
+        }
+
+      </tbody>
+    </table>
+
+    <div class="view-all-container">
+      <arouterLink="/appointments" class="view-all-btn">View All Appointments →</a>
+    </div>
+  </div>
+
+  <div class="patients-panel">
+    <h3>Recent Patients</h3>
+
+    <table>
+      <thead>
         <tr>
-          <td colspan="5">No upcoming appointments</td>
+          <th>Name</th>
+          <th>Gender</th>
+          <th>Blood</th>
+          <th>Status</th>
         </tr>
-      }
+      </thead>
 
-    </tbody>
-  </table>
+      <tbody>
+        @for (patient of recentPatients; track patient.id) {
+          <tr>
+            <td>
+              {{ patient.firstName }}
+              {{ patient.lastName }}
+            </td>
 
-  <div class="view-all-container">
-        <a routerLink="/appointments" class="view-all-btn">
-        View All Appointments →
-      </a>
-</div>
+            <td>{{ patient.gender }}</td>
+
+            <td>{{ patient.bloodGroup }}</td>
+
+            <td>
+              <span class="status-badge" [class.confirmed]="patient.status === 'Active'">
+                {{ patient.status }}
+              </span>
+            </td>
+
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4">No recent patients</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 </div>

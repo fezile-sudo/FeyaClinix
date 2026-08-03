@@ -1,0 +1,46 @@
+<mat-card class="details-card" *ngIf="patient">
+
+  <h1>
+    {{ patient.firstName }}
+    {{ patient.lastName }}
+  </h1>
+
+  <section>
+    <h2>Personal Information</h2>
+
+    <p><strong>Date of Birth:</strong>{{ patient.dateOfBirth }}</p>
+
+    <p><strong>Gender:</strong>{{ patient.gender }}</p>
+
+    <p><strong>Blood Group:</strong>{{ patient.bloodGroup }}</p>
+
+  </section>
+
+  <section>
+    <h2>Contact Information</h2>
+
+    <p><strong>Phone:</strong>{{ patient.phone }}</p>
+
+    <p><strong>Email:</strong>{{ patient.email }}</p>
+
+    <p><strong>Address:</strong>{{ patient.address }}</p>
+
+  </section>
+
+  <section>
+    <h2>Medical Information</h2>
+
+    <p><strong>Allergies:</strong>{{ patient.allergies }}</p>
+
+    <p> <strong>Conditions:</strong>{{ patient.medicalConditions }}</p>
+
+    <p><strong>Insurance:</strong>{{ patient.insuranceProvider }}</p>
+
+  </section>
+
+  <div class="actions">
+    <button mat-raised-button routerLink="/patients">
+      Back
+    </button>
+  </div>
+</mat-card>
