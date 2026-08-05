@@ -1,0 +1,148 @@
+<mat-card class="form-card">
+
+  <mat-card-header>
+    <mat-card-title>{{ isEditMode ? 'Edit Doctor' : 'Add Doctor' }}</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+
+    <form [formGroup]="doctorForm" (ngSubmit)="saveDoctor()">
+      <h2>Personal Information</h2>
+
+      <div class="row">
+
+        <mat-form-field appearance="outline">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="firstName" placeholder="Enter first name">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="lastName" placeholder="Enter last name">
+        </mat-form-field>
+
+      </div>
+
+      <div class="row">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Gender</mat-label>
+          <mat-select formControlName="gender">
+
+            <mat-option value="Male">Male</mat-option>
+            <mat-option value="Female">Female</mat-option>
+            <mat-option value="Other">Other</mat-option>
+
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Date of Birth</mat-label>
+          <input matInput type="date" formControlName="dateOfBirth">
+        </mat-form-field>
+
+      </div>
+
+
+      <h2>Contact Information</h2>
+      <div class="row">
+        <mat-form-field appearance="outline">
+          <mat-label>Phone</mat-label>
+          <input matInput formControlName="phone" placeholder="e.g. 0821234567">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" placeholder="doctor@email.com">
+        </mat-form-field>
+
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Address</mat-label>
+        <input matInput formControlName="address" placeholder="Street, City">
+      </mat-form-field>
+
+
+      <h2>Professional Information</h2>
+
+      <div class="row">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Specialty</mat-label>
+          <mat-select formControlName="specialty">
+            @for (specialty of specialties; track specialty) {
+              <mat-option [value]="specialty">{{ specialty }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Department</mat-label>
+          <input matInput formControlName="department" readonly>
+          <mat-hint>Automatically assigned from the selected specialty</mat-hint>
+        </mat-form-field>
+
+      </div>
+
+
+      <div class="row">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Qualification</mat-label>
+          <input matInput formControlName="qualification" placeholder="e.g. MBChB">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>License Number</mat-label>
+          <input matInput formControlName="licenseNumber" placeholder="Medical Council Registration">
+        </mat-form-field>
+
+      </div>
+
+
+      <div class="row">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Years of Experience</mat-label>
+          <input matInput type="number" formControlName="yearsOfExperience" placeholder="e.g. 10">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Consultation Fee</mat-label>
+          <span matTextPrefix>R&nbsp;</span>
+          <input matInput type="number" formControlName="consultationFee" placeholder="850">
+        </mat-form-field>
+
+      </div>
+
+
+      <h2>Availability</h2>
+
+        <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Availability</mat-label>
+        <mat-select formControlName="availability">
+
+          <mat-option value="Available">Available</mat-option>
+          <mat-option value="Busy">Busy</mat-option>
+          <mat-option value="On Leave">On Leave</mat-option>
+
+        </mat-select>
+      </mat-form-field>
+
+
+      <div class="actions">
+
+        <button mat-raised-button color="primary" type="submit">
+          {{ isEditMode ? 'Update Doctor' : 'Save Doctor' }}
+        </button>
+
+        <button mat-button type="button" routerLink="/doctors">Cancel</button>
+
+      </div>
+
+    </form>
+
+      </mat-card-content>
+
+</mat-card>

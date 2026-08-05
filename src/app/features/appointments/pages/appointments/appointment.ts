@@ -1,9 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+
 import { Appointment } from '../../models/appointment.model';
 import { AppointmentService } from '../../services/appointment.service';
-import { FormsModule } from '@angular/forms';
+
+import { PatientService } from '../../../patients/services/patient';
+import { DoctorService } from '../../../doctors/services/doctor.service';
+
+import { Patient } from '../../../patients/models/patient.model';
+import { Doctor } from '../../../doctors/models/doctor.model';
+
 
 @Component({
   selector: 'app-appointments',
@@ -18,71 +26,147 @@ import { FormsModule } from '@angular/forms';
 })
 export class AppointmentsComponent implements OnInit {
 
+
+  private appointmentService = inject(AppointmentService);
+
+  private patientService = inject(PatientService);
+
+  private doctorService = inject(DoctorService);
+
+  private fb = inject(FormBuilder);
+
+
+
   appointments: Appointment[] = [];
+
+  patients: Patient[] = [];
+
+  doctors: Doctor[] = [];
+
+  selectedDoctor?: Doctor;
+
+
 
   searchTerm = '';
 
   selectedStatus = 'All';
 
- get filteredAppointments(): Appointment[] {
 
-  return this.appointments.filter(appointment => {
-
-    const matchesSearch =
-      !this.searchTerm ||
-      appointment.patientName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      appointment.doctorName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      appointment.department.toLowerCase().includes(this.searchTerm.toLowerCase());
-
-    const matchesStatus =
-      this.selectedStatus === 'All' || appointment.status === this.selectedStatus;
-    return matchesSearch && matchesStatus;
-
-  });
-
-}
 
   showModal = false;
 
   isEditing = false;
-  editingAppointmentId: number | null = null; 
 
-  appointmentForm!: ReturnType<FormBuilder['group']>;
+  editingAppointmentId: number | null = null;
 
 
-  constructor(
-    private appointmentService: AppointmentService,
-    private fb: FormBuilder
-  ) {}
 
- ngOnInit(): void {
 
-  this.appointments = this.appointmentService.getAppointments();
+  appointmentForm = this.fb.group({
 
-  this.appointmentForm = this.fb.group({
-    patientName: ['', Validators.required],
-    doctorName: ['', Validators.required],
-    department: ['', Validators.required],
-    date: ['', Validators.required],
-    time: ['', Validators.required],
-    status: ['Pending', Validators.required]
+    patientId: this.fb.control<number | null>(
+      null,
+      Validators.required
+    ),
+
+    doctorId: this.fb.control<number | null>(
+      null,
+      Validators.required
+    ),
+
+    date: this.fb.control(
+      '',
+      Validators.required
+    ),
+
+    time: this.fb.control(
+      '',
+      Validators.required
+    ),
+
+    status: this.fb.control<Appointment['status']>(
+      'Pending',
+      Validators.required
+    ),
+
+    reason: this.fb.control(''),
+
+    notes: this.fb.control('')
+
   });
 
-} 
 
-  openModal(): void {
-    this.showModal = true;
+
+
+
+  ngOnInit(): void {
+
+
+    this.appointments =
+      this.appointmentService.getAppointments();
+
+
+    this.patients =
+      this.patientService.getPatients();
+
+
+    this.doctors =
+      this.doctorService.getDoctors();
+
   }
 
-  closeModal(): void {
 
-    this.showModal = false;
 
-    this.isEditing = false;
-    this.editingAppointmentId = null;
 
-    this.appointmentForm.reset({
-      status: 'Pending'
+
+  get filteredAppointments(): Appointment[] {
+
+
+    return this.appointments.filter(appointment => {
+
+
+      const patient =
+        this.getPatientName(
+          appointment.patientId
+        ).toLowerCase();
+
+
+
+      const doctor =
+        this.getDoctorName(
+          appointment.doctorId
+        ).toLowerCase();
+
+
+
+      const department =
+        this.getDepartment(
+          appointment.doctorId
+        ).toLowerCase();
+
+
+
+      const search =
+        this.searchTerm.toLowerCase();
+
+
+
+      const matchesSearch =
+        !search ||
+        patient.includes(search) ||
+        doctor.includes(search) ||
+        department.includes(search);
+
+
+
+      const matchesStatus =
+        this.selectedStatus === 'All' ||
+        appointment.status === this.selectedStatus;
+
+
+
+      return matchesSearch && matchesStatus;
+
     });
 
   }
@@ -91,89 +175,404 @@ export class AppointmentsComponent implements OnInit {
 
 
 
-saveAppointment(): void {
+  openModal(): void {
 
-  if (!this.appointmentForm || this.appointmentForm.invalid) {
-    return;
+    this.showModal = true;
+
   }
 
-  if (this.isEditing && this.editingAppointmentId !== null) {
 
-    const index = this.appointments.findIndex(
-      appointment => appointment.id === this.editingAppointmentId
+
+
+
+  closeModal(): void {
+
+
+    this.showModal = false;
+
+    this.isEditing = false;
+
+    this.editingAppointmentId = null;
+
+
+    this.selectedDoctor = undefined;
+
+
+    this.appointmentForm.reset({
+
+      status: 'Pending'
+
+    });
+
+  }
+
+
+
+
+
+  onDoctorChange(): void {
+
+  const doctorId =
+    Number(this.appointmentForm.value.doctorId);
+
+
+  this.selectedDoctor =
+    this.doctors.find(
+      doctor =>
+        doctor.id === doctorId
     );
 
-if (index !== -1) {
+}
 
-  this.appointments[index] = {
-    id: this.editingAppointmentId,
-    patientName: this.appointmentForm.value.patientName!,
-    doctorName: this.appointmentForm.value.doctorName!,
-    department: this.appointmentForm.value.department!,
-    date: this.appointmentForm.value.date!,
-    time: this.appointmentForm.value.time!,
-    status: this.appointmentForm.value.status!
-  };
 
-  this.appointmentService.saveAppointments();
+
+
+
+  saveAppointment(): void {
+
+
+    if(this.appointmentForm.invalid){
+
+      return;
+
+    }
+
+
+
+    const value =
+      this.appointmentForm.getRawValue();
+
+
+
+    if(
+      value.patientId === null ||
+      value.doctorId === null ||
+      !value.date ||
+      !value.time ||
+      !value.status
+    ){
+
+      return;
+
+    }
+
+    const doctorAvailable =
+  this.appointmentService.isDoctorAvailable(
+    value.doctorId,
+    value.date,
+    value.time,
+    this.editingAppointmentId ?? undefined
+  );
+
+
+if(!doctorAvailable){
+
+  alert(
+    'This doctor already has an appointment at this date and time.'
+  );
+
+  return;
 
 }
 
-  } else {
 
-    const newAppointment: Appointment = {
-      id: Date.now(),
-      patientName: this.appointmentForm.value.patientName!,
-      doctorName: this.appointmentForm.value.doctorName!,
-      department: this.appointmentForm.value.department!,
-      date: this.appointmentForm.value.date!,
-      time: this.appointmentForm.value.time!,
-      status: this.appointmentForm.value.status!
+
+const available =
+  this.appointmentService.isDoctorAvailable(
+    value.doctorId,
+    value.date,
+    value.time,
+    this.editingAppointmentId ?? undefined
+  );
+
+
+if(!available){
+
+  alert(
+    'This doctor already has an appointment at this date and time.'
+  );
+
+  return;
+
+}
+
+
+
+    const appointment: Appointment = {
+
+
+      id:
+      this.editingAppointmentId ??
+      Date.now(),
+
+
+
+      patientId:
+      value.patientId,
+
+
+
+      doctorId:
+      value.doctorId,
+
+
+
+      date:
+      value.date,
+
+
+
+      time:
+      value.time,
+
+
+
+      status:
+      value.status,
+
+
+
+      reason:
+      value.reason ?? '',
+
+
+
+      notes:
+      value.notes ?? ''
+
     };
 
-    this.appointments.push(newAppointment);
-    this.appointmentService.saveAppointments();
+
+
+
+
+    if(
+      this.isEditing &&
+      this.editingAppointmentId !== null
+    ){
+
+      this.appointmentService.updateAppointment(
+
+        this.editingAppointmentId,
+
+        appointment
+
+      );
+
+    }
+    else{
+
+
+      this.appointmentService.createAppointment(
+
+        appointment
+
+      );
+
+    }
+
+
+
+
+    this.appointments =
+      this.appointmentService.getAppointments();
+
+
+    this.closeModal();
+
+    
+
   }
 
-  this.closeModal();
-
-  this.appointmentForm.reset({
-    status: 'Pending'
-  });
-
-  this.isEditing = false;
-  this.editingAppointmentId = null;
-
-}
 
 
-deleteAppointment(id: number): void {
 
-  const confirmed = confirm('Are you sure you want to delete this appointment?');
-  if (!confirmed) {
-    return;
+
+
+
+  editAppointment(
+    appointment: Appointment
+  ): void {
+
+
+    this.isEditing = true;
+
+
+    this.editingAppointmentId =
+      appointment.id;
+
+
+
+    this.appointmentForm.patchValue({
+
+      patientId:
+      appointment.patientId,
+
+
+      doctorId:
+      appointment.doctorId,
+
+
+      date:
+      appointment.date,
+
+
+      time:
+      appointment.time,
+
+
+      status:
+      appointment.status,
+
+
+      reason:
+      appointment.reason ?? '',
+
+
+      notes:
+      appointment.notes ?? ''
+
+    });
+
+
+
+    this.onDoctorChange();
+
+
+    this.showModal = true;
+
   }
 
-  this.appointments = this.appointments.filter(
-    appointment => appointment.id !== id
+
+
+
+
+
+
+  deleteAppointment(
+    id:number
+  ):void{
+
+
+    const confirmed =
+      confirm(
+        'Are you sure you want to delete this appointment?'
+      );
+
+
+    if(!confirmed){
+
+      return;
+
+    }
+
+
+
+    this.appointmentService.deleteAppointment(id);
+
+
+
+    this.appointments =
+      this.appointmentService.getAppointments();
+
+  }
+
+
+
+
+
+
+
+  getPatientName(
+    id:number
+  ):string{
+
+
+    const patient =
+      this.patientService.getPatient(id);
+
+
+
+    return patient
+
+      ? `${patient.firstName} ${patient.lastName}`
+
+      : 'Unknown Patient';
+
+  }
+
+
+
+
+
+
+
+  getDoctorName(
+    id:number
+  ):string{
+
+
+    const doctor =
+      this.doctorService.getDoctor(id);
+
+
+
+    return doctor
+
+      ? `Dr. ${doctor.firstName} ${doctor.lastName}`
+
+      : 'Unknown Doctor';
+
+  }
+
+
+
+
+
+
+
+  getDepartment(
+    id:number
+  ):string{
+
+
+    const doctor =
+      this.doctorService.getDoctor(id);
+
+
+
+    return doctor?.department ?? '-';
+
+  }
+
+  changeStatus(
+  appointment: Appointment,
+  status: Appointment['status']
+): void {
+
+
+  const updated: Appointment = {
+
+    ...appointment,
+
+    status
+
+  };
+
+
+  this.appointmentService.updateAppointment(
+
+    appointment.id,
+
+    updated
+
   );
-  this.appointmentService.saveAppointments();
+
+
+  this.appointments =
+    this.appointmentService.getAppointments();
+
 }
 
-editAppointment(appointment: Appointment): void {
-
-  this.isEditing = true;
-  this.editingAppointmentId = appointment.id;
-  this.appointmentForm.patchValue({
-    patientName: appointment.patientName,
-    doctorName: appointment.doctorName,
-    department: appointment.department,
-    date: appointment.date,
-    time: appointment.time,
-    status: appointment.status
-  });
-
-  this.showModal = true;
-}
 
 }

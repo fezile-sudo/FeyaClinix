@@ -6,41 +6,91 @@
   </h1>
 
   <section>
-    <h2>Personal Information</h2>
 
-    <p><strong>Date of Birth:</strong>{{ patient.dateOfBirth }}</p>
+    <h2> Personal Information</h2>
 
-    <p><strong>Gender:</strong>{{ patient.gender }}</p>
+          <p><strong>Date of Birth:</strong>{{ patient.dateOfBirth }}</p>
 
-    <p><strong>Blood Group:</strong>{{ patient.bloodGroup }}</p>
+          <p><strong>Gender:</strong></p>
+
+          <p><strong>Blood Group:</strong>{{ patient.bloodGroup }}</p>
 
   </section>
 
   <section>
+
     <h2>Contact Information</h2>
 
-    <p><strong>Phone:</strong>{{ patient.phone }}</p>
+        <p><strong>Phone:</strong>{{ patient.phone }}</p>
 
-    <p><strong>Email:</strong>{{ patient.email }}</p>
+        <p><strong>Email:</strong>{{ patient.email }}</p>
 
-    <p><strong>Address:</strong>{{ patient.address }}</p>
+        <p><strong>Address:</strong>{{ patient.address }}</p>
 
   </section>
+
 
   <section>
+
     <h2>Medical Information</h2>
 
-    <p><strong>Allergies:</strong>{{ patient.allergies }}</p>
+         <p><strong>Allergies:</strong>{{ patient.allergies }}</p>
 
-    <p> <strong>Conditions:</strong>{{ patient.medicalConditions }}</p>
+         <p><strong>Conditions:</strong>{{ patient.medicalConditions }}</p>
 
-    <p><strong>Insurance:</strong>{{ patient.insuranceProvider }}</p>
+         <p><strong>Insurance:</strong>{{ patient.insuranceProvider }}</p>
 
   </section>
 
+
+  <section class="appointments-section">
+
+    <h2>Appointment History</h2>
+
+       <table *ngIf="appointments.length > 0">
+
+          <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Doctor</th>
+                <th>Department</th>
+                <th>Status</th>
+            </tr>
+          </thead>
+
+        <tbody>
+            <tr *ngFor="let appointment of appointments">
+                <td>{{ appointment.date }}</td>
+                <td>{{ appointment.time }}</td>
+                <td>{{ getDoctorName(appointment.doctorId) }}</td>
+                <td>{{ getDepartment(appointment.doctorId) }}</td>
+                <td>
+                    <span
+                          class="status-badge"
+                          [class.confirmed]="appointment.status === 'Confirmed'"
+                          [class.pending]="appointment.status === 'Pending'"
+                          [class.completed]="appointment.status === 'Completed'"
+                          [class.cancelled]="appointment.status === 'Cancelled'">
+                          {{ appointment.status }}
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+
+    </table>
+
+    <p *ngIf="appointments.length === 0">No appointments found for this patient.</p>
+
+  </section>
+
+
   <div class="actions">
+
     <button mat-raised-button routerLink="/patients">
-      Back
+          Back
     </button>
+
   </div>
+
 </mat-card>

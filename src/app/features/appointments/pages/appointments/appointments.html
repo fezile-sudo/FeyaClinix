@@ -3,117 +3,382 @@
   <h2>Appointments</h2>
 
   <div class="header-actions">
-    <input type="text" class="search-input" placeholder="Search patient, doctor or department..." [(ngModel)]="searchTerm">
-    <select class="filter-select" [(ngModel)]="selectedStatus">
+
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Search patient, doctor or department..."
+      [(ngModel)]="searchTerm">
+
+    <select
+      class="filter-select"
+      [(ngModel)]="selectedStatus">
+
       <option value="All">All Status</option>
       <option value="Pending">Pending</option>
       <option value="Confirmed">Confirmed</option>
+      <option value="Completed">Completed</option>
       <option value="Cancelled">Cancelled</option>
+
     </select>
 
-    <button class="add-btn" (click)="openModal()">
+    <button
+      class="add-btn"
+      (click)="openModal()">
+
       + New Appointment
+
     </button>
+
   </div>
+
 </div>
 
+
+
 <table>
+
   <thead>
-  <tr>
-    <th>Patient</th>
-    <th>Doctor</th>
-    <th>Department</th>
-    <th>Date</th>
-    <th>Time</th>
-    <th>Status</th>
-    <th>Actions</th>
-  </tr>
-</thead>
+
+    <tr>
+
+      <th>Patient</th>
+      <th>Doctor</th>
+      <th>Department</th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Status</th>
+      <th>Actions</th>
+
+    </tr>
+
+  </thead>
 
   <tbody>
-  <tr *ngFor="let appointment of filteredAppointments">
-    <td>{{ appointment.patientName }}</td>
-    <td>{{ appointment.doctorName }}</td>
-    <td>{{ appointment.department }}</td>
-    <td>{{ appointment.date | date:'dd MMM yyyy' }}</td>
-    <td>{{ appointment.time }}</td>
-     <td>
-      <span class="status-badge" [ngClass]="{
-          'confirmed': appointment.status === 'Confirmed',
-          'pending': appointment.status === 'Pending',
-          'cancelled': appointment.status === 'Cancelled'
-        }">
-        {{ appointment.status }}
-      </span>
-    </td>
 
-    <td class="actions">
-      <button class="edit-btn" (click)="editAppointment(appointment)">
-        Edit
-      </button>
+    <tr *ngFor="let appointment of filteredAppointments">
 
-      <button class="delete-btn" (click)="deleteAppointment(appointment.id)">
-        Delete
-      </button>
-    </td>
-  </tr>
-</tbody>
+      <td>
+        {{ getPatientName(appointment.patientId) }}
+      </td>
+
+      <td>
+        {{ getDoctorName(appointment.doctorId) }}
+      </td>
+
+      <td>
+        {{ getDepartment(appointment.doctorId) }}
+      </td>
+
+      <td>
+        {{ appointment.date | date:'dd MMM yyyy' }}
+      </td>
+
+      <td>
+        {{ appointment.time }}
+      </td>
+
+      <td>
+
+        <span
+          class="status-badge"
+          [ngClass]="{
+            'confirmed': appointment.status === 'Confirmed',
+            'pending': appointment.status === 'Pending',
+            'completed': appointment.status === 'Completed',
+            'cancelled': appointment.status === 'Cancelled'
+          }">
+
+          {{ appointment.status }}
+
+        </span>
+
+      </td>
+
+      <td class="actions">
+
+
+  <button
+    class="edit-btn"
+    (click)="editAppointment(appointment)">
+
+    Edit
+
+  </button>
+
+
+
+  <button
+    *ngIf="appointment.status === 'Pending'"
+    class="confirm-btn"
+    (click)="changeStatus(appointment,'Confirmed')">
+
+    Confirm
+
+  </button>
+
+
+
+  <button
+    *ngIf="appointment.status === 'Confirmed'"
+    class="complete-btn"
+    (click)="changeStatus(appointment,'Completed')">
+
+    Complete
+
+  </button>
+
+
+
+  <button
+    *ngIf="
+      appointment.status === 'Pending'
+      ||
+      appointment.status === 'Confirmed'
+    "
+    class="cancel-btn"
+    (click)="changeStatus(appointment,'Cancelled')">
+
+    Cancel
+
+  </button>
+
+
+
+  <button
+    class="delete-btn"
+    (click)="deleteAppointment(appointment.id)">
+
+    Delete
+
+  </button>
+
+
+</td>
+
+    </tr>
+
+  </tbody>
+
 </table>
 
-<div class="modal-backdrop" *ngIf="showModal">
+
+
+<div
+  class="modal-backdrop"
+  *ngIf="showModal">
+
   <div class="modal">
+
     <div class="modal-header">
-      <h3>New Appointment</h3>
-      <button  class="close-btn" (click)="closeModal()">
+
+      <h3>
+
+        {{ isEditing ? 'Edit Appointment' : 'New Appointment' }}
+
+      </h3>
+
+      <button
+        class="close-btn"
+        (click)="closeModal()">
+
         ✕
+
       </button>
+
     </div>
+
+
 
     <div class="modal-body">
+
       <form [formGroup]="appointmentForm">
-        <div class="form-group">
-         <label for="patientName">Patient Name</label> 
-          <input type="text" formControlName="patientName">
-        </div>
 
         <div class="form-group">
-          <label for="doctorName">Doctor Name</label>
-          <input type="text" formControlName="doctorName">
-        </div>
 
-        <div class="form-group">
-          <label for="department">Department</label>
-          <input type="text" formControlName="department">
-        </div>
+          <label>
 
-        <div class="form-group">
-          <label for="date">Date</label>
-          <input type="date" formControlName="date">
-        </div>
+            Patient
 
-        <div class="form-group">
-          <label for="time">Time</label>
-          <input type="time" formControlName="time">
-        </div>
+          </label>
 
-        <div class="form-group">
-          <select formControlName="status">
-            <option>Pending</option>
-            <option>Confirmed</option>
-            <option>Cancelled</option>
+          <select formControlName="patientId">
+
+            <option value="">
+              Select Patient
+            </option>
+
+            <option
+              *ngFor="let patient of patients"
+              [ngValue]="patient.id">
+
+              {{ patient.firstName }} {{ patient.lastName }}
+
+            </option>
+
           </select>
+
         </div>
+
+
+
+        <div class="form-group">
+
+          <label>
+
+            Doctor
+
+          </label>
+
+          <select
+            formControlName="doctorId"
+            (change)="onDoctorChange()">
+
+            <option value="">
+              Select Doctor
+            </option>
+
+            <option
+              *ngFor="let doctor of doctors"
+              [ngValue]="doctor.id">
+
+              Dr. {{ doctor.firstName }} {{ doctor.lastName }}
+
+            </option>
+
+          </select>
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label>
+
+            Department
+
+          </label>
+
+          <input
+            type="text"
+            [value]="selectedDoctor?.department || ''"
+            readonly>
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label>
+
+            Date
+
+          </label>
+
+          <input
+            type="date"
+            formControlName="date">
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label>
+
+            Time
+
+          </label>
+
+          <input
+            type="time"
+            formControlName="time">
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label>
+
+            Status
+
+          </label>
+
+          <select formControlName="status">
+
+            <option value="Pending">Pending</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+
+          </select>
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label>
+
+            Reason
+
+          </label>
+
+          <input
+            type="text"
+            formControlName="reason">
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label>
+
+            Notes
+
+          </label>
+
+          <textarea
+            rows="4"
+            formControlName="notes"></textarea>
+
+        </div>
+
       </form>
+
     </div>
+
+
 
     <div class="modal-footer">
-      <button class="cancel-btn" (click)="closeModal()">
+
+      <button
+        class="cancel-btn"
+        (click)="closeModal()">
+
         Cancel
+
       </button>
 
-      <button class="save-btn" type="button" (click)="saveAppointment()">
+      <button
+        class="save-btn"
+        type="button"
+        (click)="saveAppointment()">
+
         {{ isEditing ? 'Update Appointment' : 'Save Appointment' }}
+
       </button>
+
     </div>
+
   </div>
+
 </div>

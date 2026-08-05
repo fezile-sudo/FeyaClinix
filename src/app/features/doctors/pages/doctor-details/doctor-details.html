@@ -1,0 +1,46 @@
+<mat-card class="details-card" *ngIf="doctor">
+
+<h1>
+  Dr. {{ doctor.firstName }}
+  {{ doctor.lastName }}
+</h1>
+
+<section>
+  <h2>Personal Information</h2>
+  <p><strong>Date of Birth:</strong>{{ doctor.dateOfBirth }}</p>
+  <p><strong>Gender:</strong>{{ doctor.gender }}</p>
+  <p><strong>Address:</strong>{{ doctor.address }}</p>
+</section>
+
+<section>
+  <h2>Contact Information</h2>
+  <p><strong>Phone:</strong>{{ doctor.phone }}</p>
+  <p><strong>Email:</strong>{{ doctor.email }}</p>
+</section>
+
+<section>
+  <h2>Professional Information</h2>
+  <p><strong>Specialty:</strong>{{ doctor.specialty }}</p>
+  <p><strong>Qualification:</strong>{{ doctor.qualification }}</p>
+  <p><strong>License Number:</strong>{{ doctor.licenseNumber }}</p>
+  <p><strong>Experience:</strong>{{ doctor.yearsOfExperience }} years</p>
+  <p><strong>Department:</strong>{{ doctor.department }}</p>
+</section>
+
+<section>
+  <h2>Availability</h2>
+  <p><strong>Availability:</strong>{{ doctor.availability }}</p>
+  <p><strong>Status:</strong>{{ doctor.status }}</p>
+  <p><strong>Consultation Fee:</strong>R{{ doctor.consultationFee }}</p>
+</section>
+
+
+<div class="actions">
+
+    <button mat-raised-button routerLink="/doctors">Back</button>
+
+    <button mat-raised-button color="primary" [routerLink]="['/doctors', doctor.id, 'edit']">Edit Doctor</button>
+
+</div>
+
+</mat-card>

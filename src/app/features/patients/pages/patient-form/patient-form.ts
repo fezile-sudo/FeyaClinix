@@ -93,16 +93,11 @@ savePatient() {
     return;
   }
   if (this.isEditMode && this.patientId) {
-    this.patientService.updatePatient(
-      this.patientId,
-      this.patientForm.value as Patient
-    );
+    this.patientService.updatePatient(this.patientId, this.patientForm.value as Patient);
 
   } else {
 
-    this.patientService.createPatient(
-      this.patientForm.value as Patient
-    );
+    this.patientService.createPatient(this.patientForm.value as Patient);
 
   }
 

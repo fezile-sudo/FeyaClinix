@@ -1,99 +1,121 @@
 import { Injectable } from '@angular/core';
 import { Appointment } from '../models/appointment.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+
+@Injectable({providedIn: 'root'})
+
 export class AppointmentService {
 
-  private storageKey = 'appointments';
+  private storageKey = 'feyaClinix_appointments';
 
-  private appointments: Appointment[] = [];
+  private appointments: Appointment[] = this.loadAppointments();
 
-  constructor() {
-    this.loadAppointments();
-  }
+  private loadAppointments(): Appointment[] {
 
-  private loadAppointments(): void {
-    const storedAppointments = localStorage.getItem(this.storageKey);
-    if (storedAppointments) {
-      this.appointments = JSON.parse(storedAppointments);
+    const data = localStorage.getItem(this.storageKey);
 
-    } else {
+    if(!data){
+      return [];
+    }
 
-      this.appointments = [
-        {
-          id: 1,
-          patientName: 'John Doe',
-          doctorName: 'Dr. Smith',
-          department: 'Cardiology',
-          date: '2026-07-30',
-          time: '10:00 AM',
-          status: 'Confirmed'
-        },
-        {
-          id: 2,
-          patientName: 'Sarah Johnson',
-          doctorName: 'Dr. Adams',
-          department: 'Neurology',
-          date: '2026-07-30',
-          time: '11:30 AM',
-          status: 'Pending'
-        },
-        {id: 3,
-          patientName: 'Sikhangele Gulwa',
-          doctorName: 'Dr. Deysel',
-          department: 'Dematologist',
-          date: '2026-08-12',
-          time: '10:00 AM',
-          status: 'Confirmed'
-        },
-        {
-          id: 4,
-          patientName: 'Aphiwe Gulwa',
-          doctorName: 'Dr. Bandla',
-          department: 'Dentist',
-          date: '2026-08-27',
-          time: '11:30 AM',
-          status: 'Pending'
-        }
-      ];
-
-      this.saveAppointments();
+    try {
+      return JSON.parse(data);
+    }
+    catch(error){
+      console.error('Failed loading appointments',);
+      return [];
     }
 
   }
+
+  private saveAppointments(): void {
+
+    localStorage.setItem(this.storageKey, JSON.stringify(this.appointments));
+
+  }
+
 
   getAppointments(): Appointment[] {
     return this.appointments;
   }
 
-  saveAppointments(): void {
-    localStorage.setItem(this.storageKey, JSON.stringify(this.appointments)
+
+  getAppointment(id:number): Appointment | undefined {
+
+    return this.appointments.find(
+
+      appointment => appointment.id === id
+
     );
+
   }
 
- getTodayAppointmentsCount(): number {
 
-  const today = new Date();
 
-  const formattedToday =
-    `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
-  return this.appointments.filter(
-    appointment => appointment.date === formattedToday
-  ).length;
 
-}
+  createAppointment(appointment: Appointment): void {
 
-getConfirmedAppointmentsCount(): number {
-  return this.appointments.filter( appointment => appointment.status === 'Confirmed').length;
+    const newAppointment: Appointment = {...appointment, id: appointment.id || Date.now()};
 
-}
+    this.appointments.push(newAppointment);
 
-getCancelledAppointmentsCount(): number {
-  return this.appointments.filter(appointment => appointment.status === 'Cancelled').length;
+    this.saveAppointments();
 
-}
+  }
+
+
+  updateAppointment(id:number, updatedAppointment: Appointment): void {
+
+    const index = this.appointments.findIndex(appointment => appointment.id === id);
+
+    if(index !== -1){
+
+      this.appointments[index] = {...updatedAppointment, id};
+
+      this.saveAppointments();
+
+    }
+
+  }
+
+
+  deleteAppointment(id:number):void {
+
+    this.appointments = this.appointments.filter(
+
+        appointment => appointment.id !== id
+
+      );
+
+    this.saveAppointments();
+
+  }
+
+
+  getTodayAppointmentsCount(): number {
+
+    const today = new Date();
+
+    const formatted = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
+    return this.appointments.filter( appointment => appointment.date === formatted).length;
+
+  }
+
+
+  isDoctorAvailable(doctorId:number, date:string, time:string, ignoreAppointmentId?:number): boolean {
+
+    return !this.appointments.some(
+
+      appointment =>
+        appointment.doctorId === doctorId &&
+        appointment.date === date &&
+        appointment.time === time &&
+        appointment.id !== ignoreAppointmentId
+
+    );
+
+  }
 
 }

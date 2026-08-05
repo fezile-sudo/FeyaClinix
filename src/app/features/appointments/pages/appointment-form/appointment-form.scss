@@ -1,0 +1,46 @@
+.form-card {
+  margin: 30px;
+  padding: 30px;
+}
+
+.row {
+  display: flex;
+  gap: 20px;
+}
+
+.row mat-form-field {
+  flex: 1;
+}
+
+.full-width {
+  width: 100%;
+}
+
+h2 {
+  margin-top: 25px;
+  color: #3f51b5;
+}
+
+.doctor-info {
+  background: #f5f7ff;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.doctor-info p {
+  margin: 8px 0;
+}
+
+.warning {
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 25px;
+
+}
