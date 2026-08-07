@@ -12,14 +12,11 @@ export class PatientService {
 
   constructor(){
 
-    const savedPatients =
-      localStorage.getItem('patients');
-
+    const savedPatients = localStorage.getItem('patients');
 
     if(savedPatients){
 
-      this.patients =
-        JSON.parse(savedPatients);
+      this.patients = JSON.parse(savedPatients);
 
     }
     else{
@@ -93,76 +90,41 @@ export class PatientService {
 
   getPatient(id:number){
 
-    return this.patients.find(
-      p => p.id === id
-    );
+    return this.patients.find(p => p.id === id);
 
   }
-
 
 
   createPatient(patient:Patient){
 
-    const newPatient = {
-
-      ...patient,
-
-      id:
-      Date.now(),
-
-      status:'Active' as const
-
-    };
-
+    const newPatient = {...patient, id: Date.now(), status:'Active' as const};
 
     this.patients.push(newPatient);
 
-
     this.savePatients();
-
   }
 
 
+  updatePatient(id:number, updatedPatient:Patient){
 
-
-  updatePatient(
-    id:number,
-    updatedPatient:Patient
-  ){
-
-    const index =
-    this.patients.findIndex(
-      p => p.id === id
-    );
-
+    const index = this.patients.findIndex(p => p.id === id);
 
     if(index !== -1){
 
-      this.patients[index] =
-      updatedPatient;
-
+      this.patients[index] = updatedPatient;
 
       this.savePatients();
-
     }
-
   }
-
-
 
 
   deletePatient(id:number){
 
-    this.patients =
-    this.patients.filter(
-      p => p.id !== id
-    );
-
+    this.patients = this.patients.filter(p => p.id !== id);
 
     this.savePatients();
 
   }
-
 
 }
 

@@ -37,7 +37,7 @@ export class PatientForm {
 
  patientId?: number;
 
-isEditMode = false; 
+ isEditMode = false; 
 
 
   patientForm = this.fb.group({

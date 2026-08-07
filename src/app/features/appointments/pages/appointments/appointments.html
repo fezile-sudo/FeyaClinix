@@ -54,111 +54,112 @@
 
   </thead>
 
-  <tbody>
-
-    <tr *ngFor="let appointment of filteredAppointments">
-
-      <td>
-        {{ getPatientName(appointment.patientId) }}
-      </td>
-
-      <td>
-        {{ getDoctorName(appointment.doctorId) }}
-      </td>
-
-      <td>
-        {{ getDepartment(appointment.doctorId) }}
-      </td>
-
-      <td>
-        {{ appointment.date | date:'dd MMM yyyy' }}
-      </td>
-
-      <td>
-        {{ appointment.time }}
-      </td>
-
-      <td>
-
-        <span
-          class="status-badge"
-          [ngClass]="{
-            'confirmed': appointment.status === 'Confirmed',
-            'pending': appointment.status === 'Pending',
-            'completed': appointment.status === 'Completed',
-            'cancelled': appointment.status === 'Cancelled'
-          }">
-
-          {{ appointment.status }}
-
-        </span>
-
-      </td>
-
-      <td class="actions">
+ <tbody>
 
 
-  <button
-    class="edit-btn"
-    (click)="editAppointment(appointment)">
+  <tr *ngFor="let appointment of filteredAppointments">
 
-    Edit
+    <td>
+      {{ getPatientName(appointment.patientId) }}
+    </td>
 
-  </button>
+    <td>
+      {{ getDoctorName(appointment.doctorId) }}
+    </td>
 
+    <td>
+      {{ getDepartment(appointment.doctorId) }}
+    </td>
 
+    <td>
+      {{ appointment.date | date:'dd MMM yyyy' }}
+    </td>
 
-  <button
-    *ngIf="appointment.status === 'Pending'"
-    class="confirm-btn"
-    (click)="changeStatus(appointment,'Confirmed')">
+    <td>
+      {{ appointment.time }}
+    </td>
 
-    Confirm
+    <td>
 
-  </button>
+      <span
+        class="status-badge"
+        [ngClass]="{
+          'confirmed': appointment.status === 'Confirmed',
+          'pending': appointment.status === 'Pending',
+          'completed': appointment.status === 'Completed',
+          'cancelled': appointment.status === 'Cancelled'
+        }">
 
+        {{ appointment.status }}
 
+      </span>
 
-  <button
-    *ngIf="appointment.status === 'Confirmed'"
-    class="complete-btn"
-    (click)="changeStatus(appointment,'Completed')">
-
-    Complete
-
-  </button>
-
-
-
-  <button
-    *ngIf="
-      appointment.status === 'Pending'
-      ||
-      appointment.status === 'Confirmed'
-    "
-    class="cancel-btn"
-    (click)="changeStatus(appointment,'Cancelled')">
-
-    Cancel
-
-  </button>
+    </td>
 
 
+    <td class="actions">
 
-  <button
-    class="delete-btn"
-    (click)="deleteAppointment(appointment.id)">
-
-    Delete
-
-  </button>
+      <button
+        class="edit-btn"
+        (click)="editAppointment(appointment)">
+        Edit
+      </button>
 
 
-</td>
+      <button
+        *ngIf="appointment.status === 'Pending'"
+        class="confirm-btn"
+        (click)="changeStatus(appointment,'Confirmed')">
+        Confirm
+      </button>
 
-    </tr>
 
-  </tbody>
+      <button
+        *ngIf="appointment.status === 'Confirmed'"
+        class="complete-btn"
+        (click)="changeStatus(appointment,'Completed')">
+        Complete
+      </button>
+
+
+      <button
+        *ngIf="
+          appointment.status === 'Pending'
+          ||
+          appointment.status === 'Confirmed'
+        "
+        class="cancel-btn"
+        (click)="changeStatus(appointment,'Cancelled')">
+        Cancel
+      </button>
+
+
+      <button
+        class="delete-btn"
+        (click)="deleteAppointment(appointment.id)">
+        Delete
+      </button>
+
+
+    </td>
+
+
+  </tr>
+
+
+
+  <tr *ngIf="filteredAppointments.length === 0">
+
+    <td colspan="7" class="empty-message">
+
+      No appointments found
+
+    </td>
+
+  </tr>
+
+
+</tbody>
 
 </table>
 

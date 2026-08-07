@@ -42,6 +42,40 @@
     subtitle="Scheduled today">
   </app-stat-card>
 
+  <app-stat-card
+  title="Total Appointments"
+  [value]="totalAppointments"
+  icon="📅">
+</app-stat-card>
+
+
+<app-stat-card
+  title="Confirmed"
+  [value]="confirmedAppointments"
+  icon="📅">
+</app-stat-card>
+
+<app-stat-card
+  title="Completed"
+  [value]="completedAppointments"
+  icon="✔️"
+  subtitle="Finished appointments">
+</app-stat-card>
+
+
+<app-stat-card
+  title="Cancelled"
+  [value]="cancelledAppointments"
+  icon="❌"
+  subtitle="Cancelled appointments">
+</app-stat-card>
+
+<app-stat-card
+  title="Pending"
+  [value]="pendingAppointments"
+  icon="📅">
+</app-stat-card>
+
 </div>
 
 <div class="quick-actions">
@@ -74,7 +108,9 @@
       <tbody>
           @for (appointment of upcomingAppointments; track appointment.id) {
 
-        <tr>
+        <tr
+            class="clickable-row"
+            (click)="openAppointment(appointment)">
           <td>{{ getPatientName(appointment.patientId) }}</td>
 
           <td>{{ getDoctorName(appointment.doctorId) }}</td>
@@ -163,6 +199,14 @@
 
       </table>
 
+      <div class="view-all-container">
+
+  <a routerLink="/patients" class="view-all-btn">
+    View All Patients →
+  </a>
+
+</div>
+
     </div>
 
 
@@ -208,12 +252,17 @@
           <tr>
             <td colspan="3">No recent doctors</td>
           </tr>
-
         }
-
         </tbody>
 
       </table>
+
+      <div class="view-all-container">
+          <a routerLink="/doctors" class="view-all-btn">
+            View All Doctors →
+          </a>
+
+      </div>
 
     </div>
 

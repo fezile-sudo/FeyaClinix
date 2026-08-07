@@ -3,6 +3,7 @@ import { DashboardLayout } from './layouts/dashboard-layout/dashboard-layout';
 import { Dashboard } from './features/dashboard/pages/dashboard/dashboard';
 import { AppointmentsComponent } from './features/appointments/pages/appointments/appointment';
 import { AppointmentForm } from './features/appointments/pages/appointment-form/appointment-form';
+import { Calendar } from './features/calendar/pages/calendar/calendar';
 
 export const routes: Routes = [
   {
@@ -29,6 +30,10 @@ export const routes: Routes = [
 {
   path: 'appointments/edit/:id',
   component: AppointmentForm
+},
+{
+  path: 'calendar',
+  component: Calendar
 },
   {
   path: 'doctors',

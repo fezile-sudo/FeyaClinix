@@ -1,0 +1,69 @@
+<h2 mat-dialog-title>Appointment Details</h2>
+
+
+<mat-dialog-content>
+
+  @if(patient){
+
+    <div class="detail">
+      <strong>Patient</strong>
+      <span>{{ patient.firstName }} {{ patient.lastName }}</span>
+    </div>
+  }
+
+  @if(doctor){
+
+    <div class="detail">
+      <strong>Doctor</strong>
+      <span> Dr. {{ doctor.firstName }} {{ doctor.lastName }}</span>
+    </div>
+
+  }
+
+  <div class="detail">
+    <strong>Date</strong>
+    <span>{{ appointment.date }}</span>
+  </div>
+
+
+
+<div class="detail">
+  <strong>Time</strong>
+  <span>{{ appointment.time }}</span>
+  </div>
+
+  <div class="detail">
+    <strong>Status</strong>
+    <span>{{ appointment.status }}</span>
+</div>
+
+  @if(appointment.reason){
+
+    <div class="detail">
+
+      <strong>Reason</strong>
+
+      <span>{{ appointment.reason }}</span>
+
+    </div>
+  }
+
+  @if(appointment.notes){
+    <div class="detail">
+      <strong> Notes</strong>
+      <span>{{ appointment.notes }}</span>
+    </div>
+
+  }
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+  <button mat-stroked-button color="primary" (click)="editAppointment()">Edit</button>
+
+  <button mat-stroked-button color="warn" (click)="deleteAppointment()">Delete</button>
+
+  <button mat-button mat-dialog-close> Close</button>
+
+</mat-dialog-actions>

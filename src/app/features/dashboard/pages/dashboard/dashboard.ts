@@ -12,7 +12,8 @@ import { Patient } from '../../../patients/models/patient.model';
 import { DoctorService } from '../../../doctors/services/doctor.service';
 import { Doctor } from '../../../doctors/models/doctor.model';
 
-
+import { MatDialog } from '@angular/material/dialog';
+import { AppointmentDialog } from '../../../calendar/components/appointment-dialog/appointment-dialog';
 
 @Component({
   selector: 'app-dashboard',
@@ -27,6 +28,16 @@ import { Doctor } from '../../../doctors/models/doctor.model';
 export class Dashboard implements OnInit {
 
   todayAppointments = 0;
+
+  totalAppointments = 0;
+
+  pendingAppointments = 0;
+
+  confirmedAppointments = 0;
+
+  completedAppointments = 0;
+
+  cancelledAppointments = 0;
 
   upcomingAppointments: Appointment[] = [];
 
@@ -50,10 +61,11 @@ export class Dashboard implements OnInit {
 
 
   constructor(
-    private appointmentService: AppointmentService,
-    private patientService: PatientService,
-    private doctorService: DoctorService
-  ) {}
+  private appointmentService: AppointmentService,
+  private patientService: PatientService,
+  private doctorService: DoctorService,
+  private dialog: MatDialog
+) {}
 
 
 
@@ -68,9 +80,6 @@ export class Dashboard implements OnInit {
     ).padStart(2,'0')}`;
 
   }
-
-
-
 
 
   getPatientName(patientId: number): string {
@@ -112,17 +121,22 @@ export class Dashboard implements OnInit {
 
 private loadDashboard(): void {
 
-  const appointments = this.appointmentService.getAppointments();
+const appointments = this.appointmentService.getAppointments();
 
-  this.todayAppointments = this.appointmentService.getTodayAppointmentsCount();
+this.todayAppointments = this.appointmentService.getTodayAppointmentsCount();
+
+this.totalAppointments = appointments.length;
+
+this.pendingAppointments = appointments.filter(appointment => appointment.status === 'Pending').length;
+
+this.confirmedAppointments = appointments.filter(appointment => appointment.status === 'Confirmed').length;
+
+this.completedAppointments = appointments.filter(appointment => appointment.status === 'Completed').length;
+
+this.cancelledAppointments = appointments.filter(appointment => appointment.status === 'Cancelled').length;
 
   this.upcomingAppointments =
-  this.appointmentService
-  .getAppointments()
-  .filter(
-    appointment =>
-      appointment.date >= this.getTodayDate()
-  )
+  this.appointmentService.getAppointments().filter(appointment =>appointment.date >= this.getTodayDate())
   .sort(
     (a,b) =>
       new Date(`${a.date} ${a.time}`).getTime()
@@ -148,6 +162,24 @@ private loadDashboard(): void {
   this.availableDoctors = doctors.filter(doctor =>doctor.availability === 'Available').length;
 
   this.recentDoctors = doctors.slice(-5).reverse();
+
+}
+
+openAppointment(appointment: Appointment): void {
+
+  const patient = this.patientService.getPatient(appointment.patientId);
+
+  const doctor = this.doctorService.getDoctor(appointment.doctorId);
+
+  this.dialog.open(
+    AppointmentDialog,
+    {
+      width: '450px',
+
+      data: {appointment, patient, doctor}
+    }
+  );
+
 
 }
 

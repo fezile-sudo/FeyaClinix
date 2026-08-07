@@ -1,0 +1,172 @@
+<div class="calendar-page">
+
+  <header class="page-header">
+    <div>
+      <h1>Appointment Calendar</h1>
+      <p>Manage and monitor appointments across the hospital.</p>
+    </div>
+
+        <button  mat-raised-button color="primary" (click)="createAppointment()">
+        + New Appointment
+        </button> 
+  </header>
+
+    <section class="toolbar">
+      <mat-form-field appearance="outline">
+    <mat-label>Doctor</mat-label>
+
+      <mat-select [(value)]="selectedDoctor" (selectionChange)="applyFilters()">
+
+        <mat-option value="">All Doctors</mat-option>
+
+
+    @for(doctor of doctorService.getDoctors(); track doctor.id){
+
+        <mat-option [value]="doctor.id">
+
+          Dr. {{ doctor.firstName }} {{ doctor.lastName }}
+
+        </mat-option>
+
+    }
+
+
+      </mat-select>
+
+    </mat-form-field>
+
+
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+          <mat-select [(value)]="selectedStatus" (selectionChange)="applyFilters()">
+
+              <mat-option value="">All Statuses</mat-option>
+              <mat-option value="Pending">Pending</mat-option>
+              <mat-option value="Confirmed">Confirmed</mat-option>
+              <mat-option value="Completed">Completed</mat-option>
+              <mat-option value="Cancelled">Cancelled</mat-option>
+
+          </mat-select>
+      </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>View</mat-label>
+            <mat-select [(value)]="viewMode">
+
+              <mat-option value="month">Month</mat-option>
+              <mat-option value="week">Week</mat-option>
+
+            </mat-select>
+    </mat-form-field>
+  </section>
+
+
+  @if(viewMode === 'month') {
+
+<section class="calendar-container">
+
+    <div class="calendar-header">
+
+      <button  mat-stroked-button (click)="previousMonth()"> ← Previous</button>
+
+      <h2>{{ monthName }}</h2>
+
+      <button mat-stroked-button (click)="nextMonth()">Next →</button>
+
+    </div>
+
+    <div class="weekdays">
+
+      @for(day of weekDays; track day){
+        <div class="weekday">{{ day }}</div>
+      }
+
+    </div>
+
+
+    <div class="calendar-grid">
+
+      @for(day of calendarDays; track $index){
+
+        <div class="day-cell" [class.today]="isToday(day)">
+
+          @if(day){
+
+            <div class="day-number"> {{ day.getDate() }}</div>
+
+            @for(app of getAppointmentsForDay(day); track app.id){
+
+              <div class="appointment-card" [class]="getStatusClass(app.status)" (click)="openAppointment(app)">
+
+                <strong>{{ app.time }}</strong>
+
+                <span class="patient-name">{{ getPatientName(app.patientId) }}</span>
+
+                <span class="doctor-name">{{ getDoctorName(app.doctorId) }}</span>
+
+                <span class="status"> {{ app.status }}</span>
+              </div>
+
+            }
+
+          }
+
+        </div>
+
+      }
+    </div>
+  </section>
+  }
+
+  @if(viewMode === 'week') {
+
+<section class="week-container">
+
+  <h2>Weekly Schedule</h2>
+
+  @for(day of getWeekDays(); track day.toISOString()) {
+
+    <div class="week-day">
+
+      <div class="week-day-header">
+
+        <h3>{{ day | date:'EEEE, dd MMMM' }}</h3>
+
+        <span class="appointment-count">
+          {{ getAppointmentsForDay(day).length }}
+          appointments
+        </span>
+      </div>
+
+      @if(getAppointmentsForDay(day).length === 0){
+
+        <div class="empty-day">No appointments scheduled</div>
+      }
+
+
+      @for(app of getAppointmentsForDay(day); track app.id){
+
+        <div class="week-appointment" [class]="getStatusClass(app.status)" (click)="openAppointment(app)">
+
+          <div class="appointment-time"> {{ app.time }}</div>
+
+          <div class="appointment-info">
+            <strong>{{ getPatientName(app.patientId) }}</strong>
+
+            <span>
+              Dr.
+              {{ getDoctorName(app.doctorId) }}
+            </span>
+            <small> {{ app.status }}</small>
+          </div>
+        </div>
+      }
+
+    </div>
+  }
+
+</section>
+
+}
+
+</div>

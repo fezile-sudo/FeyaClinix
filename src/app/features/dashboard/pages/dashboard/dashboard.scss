@@ -147,3 +147,14 @@ td {
   background:#1d4ed8;
   transform:translateY(-2px);
 }
+
+.clickable-row {
+  cursor: pointer;
+  transition: background .2s ease;
+}
+
+.clickable-row:hover {
+
+  background: #f5f7fb;
+
+}
