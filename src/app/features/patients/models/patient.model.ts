@@ -14,4 +14,5 @@ export interface Patient {
   medicalConditions: string;
   insuranceProvider: string;
   status: 'Active' | 'Inactive';
+  createdAt: string;
 }

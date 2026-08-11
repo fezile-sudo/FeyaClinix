@@ -97,9 +97,24 @@ savePatient() {
 
   } else {
 
-    this.patientService.createPatient(this.patientForm.value as Patient);
 
-  }
+  const newPatient: Patient = {
+
+    ...this.patientForm.value as Patient,
+
+    id: Date.now(),
+
+    status: 'Active',
+
+    createdAt: new Date().toISOString()
+
+  };
+
+
+  this.patientService.createPatient(newPatient);
+
+
+}
 
   this.router.navigate(['/patients']);
 }

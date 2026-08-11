@@ -38,7 +38,8 @@ export class PatientService {
           allergies: 'None',
           medicalConditions: 'Hypertension',
           insuranceProvider: 'Discovery Health',
-          status: 'Active'
+          status: 'Active',
+          createdAt: '2026-01-10'
         },
 
         {
@@ -56,7 +57,8 @@ export class PatientService {
           allergies: 'Penicillin',
           medicalConditions: 'Asthma',
           insuranceProvider: 'Momentum Health',
-          status: 'Active'
+          status: 'Active',
+          createdAt: '2026-01-10'
         }
 
       ];
@@ -67,18 +69,11 @@ export class PatientService {
 
   }
 
-
-
   private savePatients(){
 
-    localStorage.setItem(
-      'patients',
-      JSON.stringify(this.patients)
-    );
+    localStorage.setItem('patients', JSON.stringify(this.patients));
 
   }
-
-
 
   getPatients(){
 
@@ -95,14 +90,26 @@ export class PatientService {
   }
 
 
-  createPatient(patient:Patient){
+createPatient(patient: Patient){
 
-    const newPatient = {...patient, id: Date.now(), status:'Active' as const};
+  const newPatient: Patient = {
 
-    this.patients.push(newPatient);
+    ...patient,
 
-    this.savePatients();
-  }
+    id: Date.now(),
+
+    status: 'Active',
+
+    createdAt: new Date().toISOString()
+
+  };
+
+
+  this.patients.push(newPatient);
+
+  this.savePatients();
+
+}
 
 
   updatePatient(id:number, updatedPatient:Patient){

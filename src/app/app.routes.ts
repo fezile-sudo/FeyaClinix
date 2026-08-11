@@ -46,7 +46,13 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/patients/patients.routes')
         .then(m => m.PATIENT_ROUTES)
-  }
+  },
+ {
+  path: 'reports',
+  loadChildren: () =>
+    import('./features/reports/reports.routes')
+      .then(m => m.REPORT_ROUTES)
+} 
 ]
   }
 ];

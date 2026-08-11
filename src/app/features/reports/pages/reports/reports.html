@@ -1,0 +1,106 @@
+<div class="reports">
+
+
+<div class="header">
+
+<h1>📊 Reports</h1>
+
+<p>Hospital performance overview</p>
+
+</div>
+
+
+
+<div class="stats-grid">
+
+<app-stat-card
+title="Patients"
+[value]="totalPatients"
+icon="👥"
+subtitle="Registered patients">
+</app-stat-card>
+
+<app-stat-card
+title="Active Patients"
+[value]="activePatients"
+icon="✅"
+subtitle="Currently active">
+</app-stat-card>
+
+<app-stat-card
+title="Doctors"
+[value]="totalDoctors"
+icon="👨‍⚕️"
+subtitle="Registered doctors">
+</app-stat-card>
+
+<app-stat-card
+title="Available Doctors"
+[value]="availableDoctors"
+icon="🟢"
+subtitle="Currently available">
+</app-stat-card>
+
+<app-stat-card
+title="Appointments"
+[value]="totalAppointments"
+icon="📅"
+subtitle="Total appointments">
+</app-stat-card>
+
+<app-stat-card
+title="Completed"
+[value]="completedAppointments"
+icon="✔️"
+subtitle="Finished appointments">
+</app-stat-card>
+
+<app-stat-card
+title="Pending"
+[value]="pendingAppointments"
+icon="⏳">
+</app-stat-card>
+
+<app-stat-card
+title="Cancelled"
+[value]="cancelledAppointments"
+icon="❌">
+</app-stat-card>
+
+
+</div>
+<div class="header">
+
+  <div>
+    <h1>📊 Reports</h1>
+    <p>Hospital performance overview</p>
+  </div>
+
+  <div class="last-updated">
+    <span>Last Updated</span>
+    <strong>{{ lastUpdated | date:'medium' }}</strong>
+  </div>
+
+  <div class="report-actions">
+  <button class="export-btn pdf" (click)="exportPdf()"> 📄 Export PDF</button>
+  <button class="export-btn excel" (click)="exportExcel()">📊 Export Excel</button>
+</div>
+
+</div>
+
+
+<app-report-filters (generate)="applyFilters($event)"></app-report-filters>
+
+<div class="charts-grid">
+  <app-appointment-status-chart
+    [completed]="completedAppointments"
+    [pending]="pendingAppointments"
+    [cancelled]="cancelledAppointments">
+  </app-appointment-status-chart>
+
+  <app-doctor-performance-chart [doctorData]="doctorPerformance"></app-doctor-performance-chart>
+
+  <app-patient-growth-chart [patientData]="patientGrowth"></app-patient-growth-chart> 
+
+</div>
+</div>
