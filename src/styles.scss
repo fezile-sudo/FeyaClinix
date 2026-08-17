@@ -41,3 +41,164 @@ body {
   margin: 0;
   font-family: 'Inter', Arial, sans-serif;
 }
+
+
+
+/* =========================================
+   Global Theme Variables
+   ========================================= */
+
+:root {
+  --app-background: #f8fafc;
+  --app-surface: #ffffff;
+  --app-text: #1e293b;
+  --app-text-secondary: #64748b;
+  --app-border: #e2e8f0;
+}
+
+
+/* =========================================
+   Dark Theme
+   ========================================= */
+
+body.theme-dark {
+
+  --app-background: #0f172a;
+  --app-surface: #1e293b;
+  --app-text: #f1f5f9;
+  --app-text-secondary: #94a3b8;
+  --app-border: #334155;
+
+  background-color: var(--app-background);
+  color: var(--app-text);
+}
+
+
+/* =========================================
+   Light Theme
+   ========================================= */
+
+body.theme-light {
+
+  background-color: var(--app-background);
+  color: var(--app-text);
+
+}
+
+body.theme-dark {
+
+  .mat-mdc-card {
+    background-color: var(--app-surface);
+    color: var(--app-text);
+  }
+
+  .settings-page {
+
+    .settings-nav-item {
+      color: var(--app-text-secondary);
+
+      &:hover {
+        background: #334155;
+        color: #60a5fa;
+      }
+
+      &.active {
+        background: #1e3a5f;
+        color: #60a5fa;
+      }
+    }
+
+    .section-header h2,
+    .settings-header h1,
+    .notification-item h3,
+    .appearance-option h3 {
+      color: var(--app-text);
+    }
+
+    .section-header p,
+    .settings-header p,
+    .notification-item p,
+    .appearance-option p {
+      color: var(--app-text-secondary);
+    }
+  }
+
+}
+
+/* =========================================
+   Color Schemes
+   ========================================= */
+
+body.color-blue {
+  --primary-color: #2563eb;
+  --primary-light: #eff6ff;
+  --primary-dark: #1d4ed8;
+}
+
+
+body.color-teal {
+  --primary-color: #0d9488;
+  --primary-light: #f0fdfa;
+  --primary-dark: #0f766e;
+}
+
+
+body.color-purple {
+  --primary-color: #7c3aed;
+  --primary-light: #f5f3ff;
+  --primary-dark: #6d28d9;
+}
+
+/* =========================================
+   Material Form Field Theme
+   ========================================= */
+
+body.theme-light {
+
+  .mat-mdc-form-field {
+
+    .mdc-floating-label {
+      color: var(--app-text-secondary);
+    }
+
+    .mdc-floating-label--float-above {
+      color: var(--primary-color);
+    }
+
+  }
+
+}
+
+
+body.theme-dark {
+
+  .mat-mdc-form-field {
+
+    .mdc-floating-label {
+      color: #cbd5e1;
+    }
+
+    .mdc-floating-label--float-above {
+      color: var(--primary-color);
+    }
+
+  }
+
+}
+
+body.theme-dark {
+
+  .mat-mdc-form-field {
+
+    input,
+    textarea {
+      color: #f1f5f9;
+    }
+
+    .mat-mdc-input-element::placeholder {
+      color: #94a3b8;
+    }
+
+  }
+
+}

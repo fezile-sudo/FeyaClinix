@@ -31,11 +31,9 @@ import { Patient } from '../../../patients/models/patient.model';
 })
 export class AppointmentDialog {
 
-
   appointment: Appointment;
   patient?: Patient;
   doctor?: Doctor;
-
 
   constructor(
 
@@ -58,8 +56,6 @@ export class AppointmentDialog {
 
   }
 
-
-
   editAppointment(): void {
 
     this.dialogRef.close();
@@ -69,12 +65,9 @@ export class AppointmentDialog {
   }
 
 
-
   deleteAppointment(): void {
 
-
     const confirmed = confirm('Are you sure you want to delete this appointment?');
-
 
     if(confirmed){
 

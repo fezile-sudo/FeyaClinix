@@ -1,19 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-
+import { Component, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-
 import { AppointmentService } from '../../../appointments/services/appointment.service';
 import { Appointment } from '../../../appointments/models/appointment.model';
-
 import { PatientService } from '../../../patients/services/patient';
 import { DoctorService } from '../../../doctors/services/doctor.service';
-
 import { MatDialog } from '@angular/material/dialog';
 import { AppointmentDialog } from '../../components/appointment-dialog/appointment-dialog';
-
+import { PreferencesService } from '../../../settings/services/preferences.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -30,23 +26,14 @@ import { Router } from '@angular/router';
 })
 export class Calendar implements OnInit {
 
-
   currentDate = new Date();
 
   monthName = '';
 
   calendarDays: (Date | null)[] = [];
 
-  weekDays = [
-    'Sun',
-    'Mon',
-    'Tue',
-    'Wed',
-    'Thu',
-    'Fri',
-    'Sat'
-  ];
-
+ 
+  private preferencesService = inject(PreferencesService);
 
   appointments: Appointment[] = [];
 
@@ -54,7 +41,11 @@ export class Calendar implements OnInit {
 
   selectedStatus = '';
 
-  viewMode = 'month';
+  viewMode: 'month' | 'week' = 'month';
+
+  weekStartsOn: 'sunday' | 'monday' = 'sunday';
+
+  showWeekends = true;
 
   filteredAppointments: Appointment[] = [];
 
@@ -70,9 +61,18 @@ constructor(
 
   ngOnInit(): void {
 
-    this.appointments = this.appointmentService.getAppointments();
+  this.appointments = this.appointmentService.getAppointments();
 
-    this.filteredAppointments = this.appointments;
+  this.filteredAppointments = this.appointments;
+
+
+  const preferences = this.preferencesService.getPreferences();
+
+    this.viewMode = preferences.calendarView;
+
+    this.weekStartsOn = preferences.weekStartsOn;
+
+    this.showWeekends = preferences.showWeekends;
 
     this.generateCalendar();
 
@@ -81,30 +81,40 @@ constructor(
 
   generateCalendar(): void {
 
-    this.calendarDays = [];
+        this.calendarDays = [];
 
-    const year = this.currentDate.getFullYear();
+        const year = this.currentDate.getFullYear();
 
-    const month = this.currentDate.getMonth();
+        const month = this.currentDate.getMonth();
 
-    this.monthName = this.currentDate.toLocaleString('default', { month: 'long', year: 'numeric'});
+        this.monthName = this.currentDate.toLocaleString('default', {
+              month: 'long',
+              year: 'numeric'
+            }
+          );
 
-    const firstDay = new Date(year, month, 1).getDay();
+        let firstDay = new Date(year, month, 1).getDay();
 
-    const totalDays = new Date(year, month + 1, 0).getDate();
+        if (this.weekStartsOn === 'monday') {
+          firstDay = firstDay === 0 ? 6 : firstDay - 1;
+        }
 
+        const totalDays = new Date(year, month + 1, 0).getDate();
 
-    for(let i = 0; i < firstDay; i++){
-      this.calendarDays.push(null);
-    }
+        for (let i = 0; i < firstDay; i++) {
 
-    for(let day = 1; day <= totalDays; day++){
+          this.calendarDays.push(null);
 
-      this.calendarDays.push(new Date(year, month, day));
+        }
 
-    }
+        for (let day = 1; day <= totalDays; day++) {
+          this.calendarDays.push(
+            new Date(year, month, day)
+          );
 
-  }
+        }
+
+      }
 
 
   previousMonth(): void {
@@ -129,14 +139,11 @@ constructor(
 
   }
 
-
-
   isToday(date: Date | null): boolean {
 
     if(!date) return false;
 
     const today = new Date();
-
 
     return (
       today.getDate() === date.getDate() &&
@@ -155,8 +162,6 @@ constructor(
     return this.filteredAppointments.filter( appointment => appointment.date === formattedDate);
 
   }
-
-
 
   getStatusClass(status: Appointment['status']): string {
 
@@ -191,15 +196,12 @@ getDoctorName(doctorId: number): string {
 
   }
 
-
   return 'Unknown Doctor';
 
 }
 
 createAppointment(): void {
-
   this.router.navigate(['/appointments/new']);
-
 }
 
 openAppointment(app: Appointment): void {
@@ -208,11 +210,7 @@ openAppointment(app: Appointment): void {
 
     const doctor = this.doctorService.getDoctor(app.doctorId);
 
-
-        this.dialog.open(
-          AppointmentDialog,
-          {width: '450px', data: {appointment: app, patient, doctor}}
-        );
+    this.dialog.open(AppointmentDialog, {width: '450px', data: {appointment: app, patient, doctor}});
 
 }
 
@@ -230,30 +228,58 @@ openAppointment(app: Appointment): void {
         });
 }
 
-        getWeekDays(): Date[] {
+       getWeekDays(): Date[] {
 
           const date = new Date(this.currentDate);
 
           const day = date.getDay();
 
+          let daysFromStart: number;
+
+
+          if (this.weekStartsOn === 'monday') {
+
+            daysFromStart =
+              day === 0 ? 6 : day - 1;
+
+          } else {
+
+            daysFromStart = day;
+
+          }
+
+
           const start = new Date(date);
 
-          start.setDate(date.getDate() - day);
+          start.setDate(date.getDate() - daysFromStart);
+
+
+          const numberOfDays = this.showWeekends ? 7 : 5;
 
 
           return Array.from(
-            {length: 7},
+            { length: numberOfDays },
             (_, index) => {
-
               const result = new Date(start);
-
               result.setDate(start.getDate() + index);
-
               return result;
 
             }
           );
 
-        }
+        } 
+
+getWeekDayLabels(): string[] {
+
+  if (this.weekStartsOn === 'monday') {
+
+    return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  }
+
+  return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+}
+        
 
 }

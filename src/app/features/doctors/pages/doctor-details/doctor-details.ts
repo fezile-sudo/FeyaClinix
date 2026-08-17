@@ -1,16 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-
 import { DoctorService } from '../../services/doctor.service';
 import { Doctor } from '../../models/doctor.model';
-
 import { AppointmentService } from '../../../appointments/services/appointment.service';
 import { Appointment } from '../../../appointments/models/appointment.model';
-
 import { PatientService } from '../../../patients/services/patient';
 import { Patient } from '../../../patients/models/patient.model';
-
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 

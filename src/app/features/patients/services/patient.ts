@@ -62,48 +62,27 @@ export class PatientService {
         }
 
       ];
-
       this.savePatients();
-
     }
 
   }
 
   private savePatients(){
-
     localStorage.setItem('patients', JSON.stringify(this.patients));
-
   }
 
   getPatients(){
-
     return this.patients;
-
   }
 
-
-
   getPatient(id:number){
-
     return this.patients.find(p => p.id === id);
-
   }
 
 
 createPatient(patient: Patient){
 
-  const newPatient: Patient = {
-
-    ...patient,
-
-    id: Date.now(),
-
-    status: 'Active',
-
-    createdAt: new Date().toISOString()
-
-  };
-
+  const newPatient: Patient = {...patient, id: Date.now(), status: 'Active', createdAt: new Date().toISOString()};
 
   this.patients.push(newPatient);
 

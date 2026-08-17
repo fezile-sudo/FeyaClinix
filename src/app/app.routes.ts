@@ -5,6 +5,7 @@ import { AppointmentsComponent } from './features/appointments/pages/appointment
 import { AppointmentForm } from './features/appointments/pages/appointment-form/appointment-form';
 import { Calendar } from './features/calendar/pages/calendar/calendar';
 
+
 export const routes: Routes = [
   {
     path: '',
@@ -52,7 +53,13 @@ export const routes: Routes = [
   loadChildren: () =>
     import('./features/reports/reports.routes')
       .then(m => m.REPORT_ROUTES)
-} 
+},
+{
+  path: 'settings',
+  loadChildren: () =>
+    import('./features/settings/settings.routes')
+      .then(m => m.SETTINGS_ROUTES)
+}
 ]
   }
 ];

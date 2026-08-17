@@ -14,6 +14,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteConfirmation } from '../delete-confirmation/delete-confirmation';
+import { PreferencesService } from '../../../settings/services/preferences.service';
 
 
 @Component({
@@ -38,7 +39,11 @@ export class PatientList {
 
   private patientService = inject(PatientService);
 
+  private preferencesService = inject(PreferencesService);
+
   private dialog = inject(MatDialog);
+
+  pageSize = 10;
 
  get hasPatients(): boolean {
   return this.dataSource.data.length > 0;
@@ -63,17 +68,7 @@ deletePatient(id: number): void {
 
 }
 
-
-  displayedColumns: string[] = [
-    'id',
-    'name',
-    'gender',
-    'phone',
-    'bloodGroup',
-    'status',
-    'actions'
-  ];
-
+  displayedColumns: string[] = ['id', 'name', 'gender', 'phone', 'bloodGroup', 'status', 'actions'];
 
   dataSource = new MatTableDataSource<Patient>();
 
@@ -85,14 +80,28 @@ deletePatient(id: number): void {
 
 
   ngOnInit() {
-    const patients = this.patientService.getPatients();
-    this.dataSource.data = patients;
-  }
+
+      const patients = this.patientService.getPatients();
+
+      this.dataSource.data = patients;
+
+      const preferences = this.preferencesService.getPreferences();
+
+      this.pageSize = preferences.itemsPerPage;
+
+    }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
+
+      const preferences = this.preferencesService.getPreferences();
+
+      this.paginator.pageSize = preferences.itemsPerPage;
+
+      this.dataSource.paginator = this.paginator;
+
+      this.dataSource.sort = this.sort;
+
+    }
 
   applyFilter(event: Event) {
 

@@ -97,22 +97,9 @@ savePatient() {
 
   } else {
 
-
-  const newPatient: Patient = {
-
-    ...this.patientForm.value as Patient,
-
-    id: Date.now(),
-
-    status: 'Active',
-
-    createdAt: new Date().toISOString()
-
-  };
-
+  const newPatient: Patient = {...this.patientForm.value as Patient, id: Date.now(), status: 'Active', createdAt: new Date().toISOString()};
 
   this.patientService.createPatient(newPatient);
-
 
 }
 

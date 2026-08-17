@@ -1,385 +1,240 @@
-<div class="page-header">
+<div class="appointments-page">
 
-  <h2>Appointments</h2>
+  <div class="page-header">
 
-  <div class="header-actions">
+    <div>
+      <h1>Appointments</h1>
+      <p>Manage and monitor hospital appointments</p>
+    </div>
 
-    <input
-      type="text"
-      class="search-input"
-      placeholder="Search patient, doctor or department..."
-      [(ngModel)]="searchTerm">
-
-    <select
-      class="filter-select"
-      [(ngModel)]="selectedStatus">
-
-      <option value="All">All Status</option>
-      <option value="Pending">Pending</option>
-      <option value="Confirmed">Confirmed</option>
-      <option value="Completed">Completed</option>
-      <option value="Cancelled">Cancelled</option>
-
-    </select>
-
-    <button
-      class="add-btn"
-      (click)="openModal()">
-
-      + New Appointment
-
+    <button mat-raised-button color="primary" (click)="openModal()">
+      <mat-icon>add</mat-icon>
+      New Appointment
     </button>
-
   </div>
 
-</div>
 
+  <mat-card class="appointments-card">
 
+    <div class="appointments-toolbar">
 
-<table>
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search appointments</mat-label>
+        <input matInput placeholder="Patient, doctor or department" [(ngModel)]="searchTerm" (input)="applyFilter()">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
 
-  <thead>
+      <mat-form-field appearance="outline" class="status-field">
+        <mat-label>Status</mat-label>
+        <mat-select [(value)]="selectedStatus" (selectionChange)="applyStatusFilter()">
 
-    <tr>
+          <mat-option value="All">All Statuses</mat-option>
 
-      <th>Patient</th>
-      <th>Doctor</th>
-      <th>Department</th>
-      <th>Date</th>
-      <th>Time</th>
-      <th>Status</th>
-      <th>Actions</th>
+          <mat-option value="Pending">Pending</mat-option>
 
-    </tr>
+          <mat-option value="Confirmed">Confirmed</mat-option>
 
-  </thead>
+          <mat-option value="Completed">Completed</mat-option>
 
- <tbody>
-
-
-  <tr *ngFor="let appointment of filteredAppointments">
-
-    <td>
-      {{ getPatientName(appointment.patientId) }}
-    </td>
-
-    <td>
-      {{ getDoctorName(appointment.doctorId) }}
-    </td>
-
-    <td>
-      {{ getDepartment(appointment.doctorId) }}
-    </td>
-
-    <td>
-      {{ appointment.date | date:'dd MMM yyyy' }}
-    </td>
-
-    <td>
-      {{ appointment.time }}
-    </td>
-
-    <td>
-
-      <span
-        class="status-badge"
-        [ngClass]="{
-          'confirmed': appointment.status === 'Confirmed',
-          'pending': appointment.status === 'Pending',
-          'completed': appointment.status === 'Completed',
-          'cancelled': appointment.status === 'Cancelled'
-        }">
-
-        {{ appointment.status }}
-
-      </span>
-
-    </td>
-
-
-    <td class="actions">
-
-      <button
-        class="edit-btn"
-        (click)="editAppointment(appointment)">
-        Edit
-      </button>
-
-
-      <button
-        *ngIf="appointment.status === 'Pending'"
-        class="confirm-btn"
-        (click)="changeStatus(appointment,'Confirmed')">
-        Confirm
-      </button>
-
-
-      <button
-        *ngIf="appointment.status === 'Confirmed'"
-        class="complete-btn"
-        (click)="changeStatus(appointment,'Completed')">
-        Complete
-      </button>
-
-
-      <button
-        *ngIf="
-          appointment.status === 'Pending'
-          ||
-          appointment.status === 'Confirmed'
-        "
-        class="cancel-btn"
-        (click)="changeStatus(appointment,'Cancelled')">
-        Cancel
-      </button>
-
-
-      <button
-        class="delete-btn"
-        (click)="deleteAppointment(appointment.id)">
-        Delete
-      </button>
-
-
-    </td>
-
-
-  </tr>
-
-
-
-  <tr *ngIf="filteredAppointments.length === 0">
-
-    <td colspan="7" class="empty-message">
-
-      No appointments found
-
-    </td>
-
-  </tr>
-
-
-</tbody>
-
-</table>
-
-
-
-<div
-  class="modal-backdrop"
-  *ngIf="showModal">
-
-  <div class="modal">
-
-    <div class="modal-header">
-
-      <h3>
-
-        {{ isEditing ? 'Edit Appointment' : 'New Appointment' }}
-
-      </h3>
-
-      <button
-        class="close-btn"
-        (click)="closeModal()">
-
-        ✕
-
-      </button>
-
+          <mat-option value="Cancelled">Cancelled</mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
 
 
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" matSort class="appointments-table">
 
-    <div class="modal-body">
+        <ng-container matColumnDef="patient">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Patient</th>
+          <td mat-cell *matCellDef="let appointment">{{ getPatientName(appointment.patientId) }}</td>
+        </ng-container>
 
-      <form [formGroup]="appointmentForm">
+         <ng-container matColumnDef="doctor">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Doctor</th>
+          <td mat-cell *matCellDef="let appointment">{{ getDoctorName(appointment.doctorId) }}</td>
+        </ng-container>
 
-        <div class="form-group">
+        <ng-container matColumnDef="department">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Department</th>
+          <td mat-cell *matCellDef="let appointment">{{ getDepartment(appointment.doctorId) }}</td>
+        </ng-container>
 
-          <label>
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+          <td mat-cell *matCellDef="let appointment">{{ appointment.date | date:'dd MMM yyyy' }}</td>
+        </ng-container>
 
-            Patient
+         <ng-container matColumnDef="time">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Time</th>
+          <td mat-cell *matCellDef="let appointment">{{ appointment.time }}</td>
+        </ng-container>
 
-          </label>
-
-          <select formControlName="patientId">
-
-            <option value="">
-              Select Patient
-            </option>
-
-            <option
-              *ngFor="let patient of patients"
-              [ngValue]="patient.id">
-
-              {{ patient.firstName }} {{ patient.lastName }}
-
-            </option>
-
-          </select>
-
-        </div>
-
-
-
-        <div class="form-group">
-
-          <label>
-
-            Doctor
-
-          </label>
-
-          <select
-            formControlName="doctorId"
-            (change)="onDoctorChange()">
-
-            <option value="">
-              Select Doctor
-            </option>
-
-            <option
-              *ngFor="let doctor of doctors"
-              [ngValue]="doctor.id">
-
-              Dr. {{ doctor.firstName }} {{ doctor.lastName }}
-
-            </option>
-
-          </select>
-
-        </div>
-
-
-
-        <div class="form-group">
-
-          <label>
-
-            Department
-
-          </label>
-
-          <input
-            type="text"
-            [value]="selectedDoctor?.department || ''"
-            readonly>
-
-        </div>
-
-
-
-        <div class="form-group">
-
-          <label>
-
-            Date
-
-          </label>
-
-          <input
-            type="date"
-            formControlName="date">
-
-        </div>
-
-
-
-        <div class="form-group">
-
-          <label>
-
-            Time
-
-          </label>
-
-          <input
-            type="time"
-            formControlName="time">
-
-        </div>
-
-
-
-        <div class="form-group">
-
-          <label>
-
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>
             Status
+          </th>
 
-          </label>
-
-          <select formControlName="status">
-
-            <option value="Pending">Pending</option>
-            <option value="Confirmed">Confirmed</option>
-            <option value="Completed">Completed</option>
-            <option value="Cancelled">Cancelled</option>
-
-          </select>
-
-        </div>
+          <td mat-cell *matCellDef="let appointment">
+            <mat-chip [class]="appointment.status.toLowerCase()">{{ appointment.status }}</mat-chip>
+          </td>
+        </ng-container>
 
 
+         <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>
+            Actions
+          </th>
 
-        <div class="form-group">
+          <td mat-cell *matCellDef="let appointment" class="actions-cell">
 
-          <label>
+            <button mat-icon-button color="primary" matTooltip="Edit appointment" (click)="editAppointment(appointment)">
+              <mat-icon>edit</mat-icon>
+            </button>
 
-            Reason
+             @if (appointment.status === 'Pending') {
+              <button mat-icon-button color="primary" matTooltip="Confirm appointment" (click)="changeStatus(appointment, 'Confirmed')">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+            }
 
-          </label>
+            @if (appointment.status === 'Confirmed') {
+              <button mat-icon-button color="primary" matTooltip="Complete appointment" (click)="changeStatus(appointment, 'Completed')">
+                <mat-icon>task_alt</mat-icon>
+              </button>
+            }
 
-          <input
-            type="text"
-            formControlName="reason">
+            @if (
+              appointment.status === 'Pending' ||
+              appointment.status === 'Confirmed'
+            ) {
 
-        </div>
+              <button mat-icon-button color="warn" matTooltip="Cancel appointment" (click)="changeStatus(appointment, 'Cancelled')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            }
 
+            <button mat-icon-button color="warn" matTooltip="Delete appointment" (click)="deleteAppointment(appointment.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
 
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 
-        <div class="form-group">
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-          <label>
-
-            Notes
-
-          </label>
-
-          <textarea
-            rows="4"
-            formControlName="notes"></textarea>
-
-        </div>
-
-      </form>
-
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell empty-message" [attr.colspan]="displayedColumns.length">
+            No appointments found
+          </td>
+        </tr>
+      </table>
     </div>
 
 
+    <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
 
-    <div class="modal-footer">
+  </mat-card>
 
-      <button
-        class="cancel-btn"
-        (click)="closeModal()">
 
-        Cancel
+  @if (showModal) {
+    <div class="modal-backdrop">
+      <div class="modal">
+      <div class="modal-header">
+          <h3>{{ isEditing ? 'Edit Appointment' : 'New Appointment' }}</h3>
+          <button mat-icon-button type="button" (click)="closeModal()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
 
-      </button>
+         <div class="modal-body">
+          <form [formGroup]="appointmentForm">
+          <div class="form-group">
+              <label>Patient</label>
+              <select formControlName="patientId">
+                <option value="">Select Patient</option>
+                @for (patient of patients; track patient.id) {
+                  <option [ngValue]="patient.id">
+                    {{ patient.firstName }}
+                    {{ patient.lastName }}
+                  </option>
+                }
+              </select>
+            </div>
 
-      <button
-        class="save-btn"
-        type="button"
-        (click)="saveAppointment()">
 
-        {{ isEditing ? 'Update Appointment' : 'Save Appointment' }}
+            <div class="form-group">
+              <label>Doctor</label>
+              <select formControlName="doctorId" (change)="onDoctorChange()">
+                <option value="">Select Doctor</option>
+                 @for (doctor of doctors; track doctor.id) {
+                  <option [ngValue]="doctor.id">
+                    Dr.
+                    {{ doctor.firstName }}
+                    {{ doctor.lastName }}
+                  </option>
+                }
+              </select>
+            </div>
 
-      </button>
+            <div class="form-group">
+              <label>Department</label>
+              <input type="text" [value]="selectedDoctor?.department || ''" readonly>
+            </div>
+
+            <div class="form-group">
+              <label>Date</label>
+              <input type="date" formControlName="date">
+            </div>
+
+            <div class="form-group">
+              <label>Time</label>
+              <input type="time" formControlName="time">
+            </div>
+
+
+            <div class="form-group">
+              <label>Status</label>
+              <select formControlName="status">
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Reason</label>
+              <input type="text" formControlName="reason">
+            </div>
+
+            <div class="form-group">
+              <label>Notes</label>
+              <textarea rows="4" formControlName="notes"></textarea>
+            </div>
+
+          </form>
+
+        </div>
+
+        <div class="modal-footer">
+
+          <button mat-button type="button" (click)="closeModal()">
+            Cancel
+          </button>
+
+          <button mat-raised-button color="primary" type="button" (click)="saveAppointment()">
+            <mat-icon>save</mat-icon>
+            {{ isEditing ? 'Update Appointment' : 'Save Appointment' }}
+          </button>
+
+        </div>
+
+      </div>
 
     </div>
 
-  </div>
+  }
 
 </div>

@@ -56,15 +56,8 @@ export class PatientGrowthChart implements OnChanges {
           backgroundColor: '#93c5fd',
           tension: 0.4,
           fill: true
-
         }
-
       ]
-
     };
-
-
   }
-
-
 }

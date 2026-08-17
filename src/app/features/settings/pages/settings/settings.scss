@@ -1,0 +1,379 @@
+.settings-page {
+  padding: 24px;
+  background: var(--app-background);
+  min-height: calc(100vh - 64px);
+}
+
+.settings-header {
+  margin-bottom: 24px;
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--app-text); 
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: var(--app-text-secondary);
+    font-size: 14px;
+  }
+}
+
+.settings-container {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  max-width: 1200px;
+}
+
+.settings-nav {
+  padding: 12px;
+  height: fit-content;
+}
+
+.settings-nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-bottom: 4px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  color: #64748b;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: 0.2s ease;
+
+  mat-icon {
+    font-size: 20px;
+  }
+
+  &:hover {
+    background: #f1f5f9;
+    color: #2563eb;
+  }
+
+  &.active {
+    background: var(--primary-light);
+    color: var(--primary-color);
+    font-weight: 500;
+  }
+}
+
+.settings-content {
+  padding: 28px;
+}
+
+.section-header {
+  margin-bottom: 28px;
+
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--app-text);
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: var(--app-text-secondary);
+    font-size: 14px;
+  }
+}
+
+.settings-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 20px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--app-border);
+}
+
+@media (max-width: 768px) {
+  .settings-container {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px;
+  margin-bottom: 28px;
+  background: #f8fafc;
+  border-radius: 10px;
+}
+
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #dbeafe;
+  color: var(--primary-color);
+
+  mat-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+  }
+}
+
+.profile-info {
+
+  h3 {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+
+  p {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: var(--primary-color);
+  }
+
+  button {
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      margin-right: 4px;
+    }
+  }
+}
+
+.notification-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 0;
+  border-top: 1px solid var(--app-border);
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.notification-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.notification-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: var(--primary-color); 
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.notification-item h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--primary-color);
+}
+
+.notification-item p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--primary-color);
+}
+
+@media (max-width: 600px) {
+  .notification-item {
+    align-items: flex-start;
+  }
+
+  .notification-info {
+    align-items: flex-start;
+  }
+}
+
+.appearance-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.appearance-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 0;
+  border-top: 1px solid var(--app-border); 
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.appearance-option-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.appearance-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: var(--primary-color);
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.appearance-option h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--primary-color);
+}
+
+.appearance-option p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--primary-color);
+}
+
+.appearance-option mat-form-field {
+  width: 200px;
+}
+
+@media (max-width: 700px) {
+  .appearance-option {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .appearance-option mat-form-field {
+    width: 100%;
+  }
+
+}
+
+.preferences-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.preference-option,
+.preference-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--app-border);
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.preference-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.preference-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--primary-light);
+  color: var(--primary-color);
+  mat-icon {
+    width: 22px;
+    height: 22px;
+    font-size: 22px;
+  }
+}
+
+.preference-option h3,
+.preference-toggle h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--app-text);
+}
+
+.preference-option p,
+.preference-toggle p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--app-text-secondary);
+}
+
+.preference-option mat-form-field {
+  width: 200px;
+}
+
+.preference-toggle mat-slide-toggle {
+  flex-shrink: 0;
+}
+
+@media (max-width: 700px) {
+  .preference-option,
+  .preference-toggle {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .preference-option mat-form-field {
+    width: 100%;
+  }
+
+}

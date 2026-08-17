@@ -20,7 +20,7 @@ import { RouterLink, Router } from '@angular/router';
 
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteConfirmation } from '../delete-confirmation/delete-confirmation';
-
+import { PreferencesService } from '../../../settings/services/preferences.service';
 
 @Component({
   selector: 'app-doctor-list',
@@ -48,16 +48,9 @@ private dialog = inject(MatDialog);
 
 private router = inject(Router);
 
+private preferencesService = inject(PreferencesService);
 
-displayedColumns: string[] = [
-'id',
-'name',
-'specialty',
-'department',
-'availability',
-'status',
-'actions'
-];
+displayedColumns: string[] = ['id','name','specialty','department','availability','status','actions'];
 
 dataSource = new MatTableDataSource<Doctor>();
 
@@ -67,13 +60,20 @@ paginator!: MatPaginator;
 @ViewChild(MatSort)
 sort!: MatSort;
 
-ngOnInit(){
-this.dataSource.data = this.doctorService.getDoctors();
+ngOnInit() {
+  this.dataSource.data = this.doctorService.getDoctors();
 }
 
-ngAfterViewInit(){
-this.dataSource.paginator = this.paginator;
-this.dataSource.sort = this.sort;
+ngAfterViewInit() {
+
+  const preferences = this.preferencesService.getPreferences();
+
+  this.paginator.pageSize = preferences.itemsPerPage;
+
+  this.dataSource.paginator = this.paginator;
+
+  this.dataSource.sort = this.sort;
+
 }
 
 applyFilter(event: Event){

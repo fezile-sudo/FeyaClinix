@@ -1,17 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
 import { StatCard } from '../../components/stat-card/stat-card';
-
 import { AppointmentService } from '../../../appointments/services/appointment.service';
 import { Appointment } from '../../../appointments/models/appointment.model';
-
 import { PatientService } from '../../../patients/services/patient';
 import { Patient } from '../../../patients/models/patient.model';
-
 import { DoctorService } from '../../../doctors/services/doctor.service';
 import { Doctor } from '../../../doctors/models/doctor.model';
-
 import { MatDialog } from '@angular/material/dialog';
 import { AppointmentDialog } from '../../../calendar/components/appointment-dialog/appointment-dialog';
 
@@ -73,11 +68,7 @@ export class Dashboard implements OnInit {
 
     const today = new Date();
 
-    return `${today.getFullYear()}-${String(
-      today.getMonth() + 1
-    ).padStart(2,'0')}-${String(
-      today.getDate()
-    ).padStart(2,'0')}`;
+    return `${today.getFullYear()}-${String( today.getMonth() + 1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
   }
 

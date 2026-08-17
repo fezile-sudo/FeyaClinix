@@ -108,9 +108,7 @@
       <tbody>
           @for (appointment of upcomingAppointments; track appointment.id) {
 
-        <tr
-            class="clickable-row"
-            (click)="openAppointment(appointment)">
+        <tr class="clickable-row" (click)="openAppointment(appointment)">
           <td>{{ getPatientName(appointment.patientId) }}</td>
 
           <td>{{ getDoctorName(appointment.doctorId) }}</td>
@@ -258,10 +256,7 @@
       </table>
 
       <div class="view-all-container">
-          <a routerLink="/doctors" class="view-all-btn">
-            View All Doctors →
-          </a>
-
+          <a routerLink="/doctors" class="view-all-btn">View All Doctors →</a>
       </div>
 
     </div>
