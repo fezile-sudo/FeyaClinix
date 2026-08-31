@@ -141,12 +141,15 @@
           {{ profileForm.controls.lastName.value }}
         </h3>
 
-        <p>Hospital Administrator</p>
+        <p>{{ profileForm.controls.role.value }}</p>
 
         <button mat-stroked-button color="primary" type="button">
-        <mat-icon>photo_camera</mat-icon>Change Photo</button>
+          <mat-icon>photo_camera</mat-icon>
+          Change Photo
+        </button>
 
       </div>
+
     </div>
 
     <form
@@ -163,8 +166,9 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Email Address</mat-label>
-        <input matInput type="email" formControlName="email">
+        <input matInput type="email" formControlName="email" readonly>
       </mat-form-field>
+
 
       <mat-form-field appearance="outline">
         <mat-label>Phone Number</mat-label>

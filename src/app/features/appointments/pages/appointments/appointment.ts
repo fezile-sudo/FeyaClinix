@@ -239,9 +239,7 @@ export class AppointmentsComponent implements OnInit {
 
     const appointment: Appointment = {
 
-      id:
-        this.editingAppointmentId ??
-        Date.now(),
+      id: this.editingAppointmentId ?? Date.now(),
       patientId: value.patientId,
       doctorId: value.doctorId,
       date: value.date,

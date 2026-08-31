@@ -1,18 +1,9 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import {
-  MAT_DIALOG_DATA,
-  MatDialogModule,
-  MatDialogRef
-} from '@angular/material/dialog';
-
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-
 import { Router } from '@angular/router';
-
 import { AppointmentService } from '../../../appointments/services/appointment.service';
-
 import { Appointment } from '../../../appointments/models/appointment.model';
 import { Doctor } from '../../../doctors/models/doctor.model';
 import { Patient } from '../../../patients/models/patient.model';

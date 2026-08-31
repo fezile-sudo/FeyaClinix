@@ -108,9 +108,7 @@ constructor(
         }
 
         for (let day = 1; day <= totalDays; day++) {
-          this.calendarDays.push(
-            new Date(year, month, day)
-          );
+          this.calendarDays.push(new Date(year, month, day));
 
         }
 
@@ -118,11 +116,7 @@ constructor(
 
 
   previousMonth(): void {
-      this.currentDate = new Date(
-      this.currentDate.getFullYear(),
-      this.currentDate.getMonth() - 1,
-      1
-    );
+    this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() - 1, 1);
 
     this.generateCalendar();
 
@@ -239,8 +233,7 @@ openAppointment(app: Appointment): void {
 
           if (this.weekStartsOn === 'monday') {
 
-            daysFromStart =
-              day === 0 ? 6 : day - 1;
+            daysFromStart = day === 0 ? 6 : day - 1;
 
           } else {
 

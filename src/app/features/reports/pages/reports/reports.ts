@@ -113,8 +113,7 @@ export class Reports implements OnInit {
       monthlyData[month]++;
     });
 
-    this.patientGrowth =
-      Object.keys(monthlyData).map(month => ({month, patients: monthlyData[month]}));
+    this.patientGrowth = Object.keys(monthlyData).map(month => ({month, patients: monthlyData[month]}));
 
     const doctors = this.doctorService.getDoctors();
 

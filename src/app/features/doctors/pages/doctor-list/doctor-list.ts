@@ -1,23 +1,17 @@
 import { Component, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { DoctorService } from '../../services/doctor.service';
 import { Doctor } from '../../models/doctor.model';
-
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
-
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-
 import { RouterLink, Router } from '@angular/router';
-
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteConfirmation } from '../delete-confirmation/delete-confirmation';
 import { PreferencesService } from '../../../settings/services/preferences.service';

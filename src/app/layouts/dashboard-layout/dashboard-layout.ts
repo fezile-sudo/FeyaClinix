@@ -26,8 +26,7 @@ import { AppearanceService } from '../../features/settings/services/appearance.s
 })
 export class DashboardLayout {
 
-  private appearanceService =
-    inject(AppearanceService);
+  private appearanceService = inject(AppearanceService);
 
 
   sidebarCollapsed = signal(false);
@@ -37,12 +36,9 @@ export class DashboardLayout {
 
     effect(() => {
 
-      const appearance =
-        this.appearanceService.appearanceSettings();
+      const appearance = this.appearanceService.appearanceSettings();
 
-      this.sidebarCollapsed.set(
-        appearance.sidebar === 'compact'
-      );
+      this.sidebarCollapsed.set(appearance.sidebar === 'compact');
 
     });
 

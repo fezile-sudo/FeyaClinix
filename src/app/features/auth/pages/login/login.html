@@ -1,0 +1,131 @@
+<div class="login-page">
+
+  <div class="login-card">
+
+   
+    <section class="brand-panel">
+
+      <div class="brand-logo">
+        🩺
+      </div>
+
+      <h1>FeyaClinix</h1>
+
+      <p class="brand-subtitle">
+        Hospital & Medical Appointment System
+      </p>
+
+      <div class="brand-message">
+        <h2>Healthcare management made simple.</h2>
+        <p> Manage appointments, patients, doctors and clinical operations from one centralized dashboard.</p>
+      </div>
+
+      <div class="brand-footer">
+        <span>Secure</span>
+        <span>•</span>
+        <span>Efficient</span>
+        <span>•</span>
+        <span>Connected</span>
+      </div>
+
+    </section>
+
+
+    
+
+    <section class="login-panel">
+      <div class="login-header">
+        <span class="welcome-label">Welcome back</span>
+        <h2>Sign in to your account</h2>
+        <p>Enter your credentials to access the medical dashboard.</p>
+      </div>
+
+
+      <form class="login-form" (ngSubmit)="onLogin()">
+
+       
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input id="email" type="email" name="email" [(ngModel)]="email" placeholder="admin@feyaclinix.com" autocomplete="email" required/>
+        </div>
+
+        <div class="form-group">
+          <div class="label-row">
+            <label for="password"> Password</label>
+          </div>
+
+          <div class="password-field">
+            <input id="password" [type]="showPassword() ? 'text' : 'password'" name="password" [(ngModel)]="password" placeholder="Enter your password" autocomplete="current-password" required />
+
+            <button type="button" class="password-toggle" (click)="togglePasswordVisibility()">
+              {{ showPassword() ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+        </div>
+
+       
+        @if (loginError()) {
+          <div class="login-error" role="alert">
+            <span class="error-icon">!</span>
+            <span>{{ loginError() }}</span>
+          </div>
+
+        }
+
+        <button type="submit" class="login-button">
+          <span>Sign In</span>
+          <span class="arrow">→</span>
+        </button>
+
+      </form>
+
+      <div class="demo-credentials">
+        <div class="demo-header">
+          <span class="demo-icon">i</span>
+          <span>Portfolio Demo</span>
+        </div>
+
+        <div class="demo-row">
+          <span>Email</span>
+          <strong>admin@feyaclinix.com</strong>
+        </div>
+
+        <div class="demo-row">
+          <span>Password</span>
+          <strong>Admin@123</strong>
+        </div>
+
+        <div class="demo-row">
+          <span>Email</span>
+          <strong>reception@feyaclinix.com</strong>
+        </div>
+
+        <div class="demo-row">
+          <span>Password</span>
+          <strong>Reception@123</strong>
+        </div>
+
+        <div class="demo-row">
+          <span>Email</span>
+          <strong>doctor@feyaclinix.com</strong>
+        </div>
+
+        <div class="demo-row">
+          <span>Password</span>
+          <strong>Doctor@123</strong>
+        </div>
+
+      </div>
+
+
+      <p class="login-footer">
+        FeyaClinix Medical Management System
+      </p>
+
+    </section>
+
+  </div>
+
+</div>
+
+

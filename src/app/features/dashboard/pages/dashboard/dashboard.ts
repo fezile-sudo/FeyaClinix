@@ -126,8 +126,7 @@ this.completedAppointments = appointments.filter(appointment => appointment.stat
 
 this.cancelledAppointments = appointments.filter(appointment => appointment.status === 'Cancelled').length;
 
-  this.upcomingAppointments =
-  this.appointmentService.getAppointments().filter(appointment =>appointment.date >= this.getTodayDate())
+this.upcomingAppointments = this.appointmentService.getAppointments().filter(appointment =>appointment.date >= this.getTodayDate())
   .sort(
     (a,b) =>
       new Date(`${a.date} ${a.time}`).getTime()

@@ -1,5 +1,6 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-layout-sidebar',
@@ -13,44 +14,63 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class LayoutSidebar {
 
+  private readonly authService = inject(AuthService);
+
   collapsed = input(false);
 
-  menuItems = [
+  private readonly allMenuItems = [
     {
       label: 'Dashboard',
       icon: '🏠',
-      route: '/dashboard'
+      route: '/dashboard',
+      roles: ['Administrator', 'Doctor', 'Receptionist']
     },
     {
       label: 'Doctors',
       icon: '👨‍⚕️',
-      route: '/doctors'
+      route: '/doctors',
+      roles: ['Administrator']
     },
     {
       label: 'Patients',
       icon: '👥',
-      route: '/patients'
+      route: '/patients',
+      roles: ['Administrator', 'Doctor', 'Receptionist']
     },
     {
       label: 'Appointments',
       icon: '📅',
-      route: '/appointments'
+      route: '/appointments',
+      roles: ['Administrator', 'Doctor', 'Receptionist']
     },
     {
       label: 'Calendar',
       icon: '🗓️',
-      route: '/calendar'
+      route: '/calendar',
+      roles: ['Administrator', 'Doctor', 'Receptionist']
     },
     {
       label: 'Reports',
       icon: '📊',
-      route: '/reports'
+      route: '/reports',
+      roles: ['Administrator', 'Doctor']
     },
     {
       label: 'Settings',
       icon: '⚙️',
-      route: '/settings'
+      route: '/settings',
+      roles: ['Administrator']
     }
   ];
+
+  readonly menuItems = computed(() => {
+
+    const role = this.authService.currentUser()?.role;
+
+    return this.allMenuItems.filter(item =>
+      item.roles.includes(role ?? '')
+    );
+
+  });
 
 }

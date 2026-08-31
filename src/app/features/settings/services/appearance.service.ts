@@ -15,9 +15,7 @@ export class AppearanceService {
 
   private defaultSettings: AppearanceSettings = {theme: 'light', sidebar: 'expanded', colorScheme: 'blue'};
 
-  appearanceSettings = signal<AppearanceSettings>(
-    this.getAppearanceSettings()
-  );
+  appearanceSettings = signal<AppearanceSettings>(this.getAppearanceSettings());
 
 
   getAppearanceSettings(): AppearanceSettings {

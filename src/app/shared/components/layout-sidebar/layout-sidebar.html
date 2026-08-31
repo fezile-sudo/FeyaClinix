@@ -2,19 +2,29 @@
 
   <div class="logo">
     <span class="logo-icon">🩺</span>
-    @if (!collapsed()) {<span class="logo-text">FeyaClinix</span>}
+
+    @if (!collapsed()) {
+      <span class="logo-text">FeyaClinix</span>
+    }
   </div>
 
   <nav>
 
-  @for (item of menuItems; track item.route) {
+    @for (item of menuItems(); track item.route) {
 
-    <a [routerLink]="item.route" routerLinkActive="active">
-      <span class="icon">{{ item.icon }}</span>
-      @if (!collapsed()) {<span>{{ item.label }}</span>}
-    </a>
+      <a
+        [routerLink]="item.route"
+        routerLinkActive="active"
+      >
+        <span class="icon">{{ item.icon }}</span>
 
-  }
+        @if (!collapsed()) {
+          <span>{{ item.label }}</span>
+        }
+      </a>
 
-</nav>
+    }
+
+  </nav>
+
 </aside>

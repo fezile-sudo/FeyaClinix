@@ -1,4 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+
+import { AuthService } from '../../../core/services/auth.service';
 
 export interface ProfileSettings {
   firstName: string;
@@ -14,34 +16,82 @@ export interface ProfileSettings {
 })
 export class ProfileService {
 
-  private readonly storageKey = 'feyaClinicProfile';
+  private readonly authService = inject(AuthService);
 
-  private defaultProfile: ProfileSettings = {
-    firstName: 'Admin',
-    lastName: 'User',
-    email: 'admin@feyaclinic.com',
-    phone: '',
-    role: 'Administrator',
-    department: 'Administration'
-  };
-
+  private readonly storagePrefix = 'feyaClinicProfile_';
 
   getProfile(): ProfileSettings {
 
-    const savedProfile = localStorage.getItem(this.storageKey);
+    const user = this.authService.currentUser();
 
-    if (savedProfile) {
-      return JSON.parse(savedProfile);
+    if (!user) {
+      return {
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        role: '',
+        department: ''
+      };
     }
 
-    return this.defaultProfile;
-  }
+    const storageKey = `${this.storagePrefix}${user.id}`;
 
+    const savedProfile = localStorage.getItem(storageKey);
+
+    const savedData = savedProfile? JSON.parse(savedProfile) : {};
+
+    const name = user.name.trim();
+
+      let firstName = '';
+      let lastName = '';
+
+      if (name.startsWith('Dr. ')) {
+
+        const nameWithoutTitle = name.substring(4).trim();
+
+        const nameParts = nameWithoutTitle.split(' ');
+
+        firstName = nameParts.shift() ?? '';
+        lastName = nameParts.join(' ');
+
+      } else {
+
+        const nameParts = name.split(' ');
+
+        firstName = nameParts.shift() ?? '';
+        lastName = nameParts.join(' ');
+      }
+
+
+    return {
+      firstName,
+      lastName,
+      email: user.email,
+      phone: savedData.phone ?? '',
+      role: user.role,
+      department: savedData.department ?? ''
+    };
+  }
 
   saveProfile(profile: ProfileSettings): void {
 
-    localStorage.setItem(this.storageKey, JSON.stringify(profile));
+    const user = this.authService.currentUser();
 
+    if (!user) {
+      return;
+    }
+
+    const storageKey = `${this.storagePrefix}${user.id}`;
+
+    const profileData = {
+      phone: profile.phone,
+      department: profile.department
+    };
+
+    localStorage.setItem(
+      storageKey,
+      JSON.stringify(profileData)
+    );
   }
-
 }

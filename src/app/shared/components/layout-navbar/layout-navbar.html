@@ -1,12 +1,32 @@
 <header class="navbar">
 
-  <button class="menu-button" (click)="onToggleSidebar()"> ☰</button>
+  <button class="menu-button" (click)="onToggleSidebar()">
+    ☰
+  </button>
 
   <div class="brand"> 🩺 FeyaClinix</div>
 
   <div class="actions">
-    <span>🔔</span>
-    <span>👤</span>
+
+    <button type="button" class="notification-button" aria-label="Notifications"> 🔔</button>
+
+    <div class="user-info">
+
+      <div class="user-avatar">👤</div>
+
+      <div class="user-details">
+        <span class="user-name">{{ currentUser()?.name }}</span>
+
+        <span class="user-role">{{ currentUser()?.role }}</span>
+      </div>
+
+      <button type="button" class="logout-button" (click)="onLogout()">
+        Logout
+      </button>
+
+    </div>
+
   </div>
 
 </header>
+

@@ -65,38 +65,19 @@ export class AppointmentForm implements OnInit {
 
   appointmentForm = this.fb.group({
 
-    patientId: this.fb.control<number | null>(
-      null,
-      Validators.required
-    ),
+    patientId: this.fb.control<number | null>( null, Validators.required),
 
-    doctorId: this.fb.control<number | null>(
-      null,
-      Validators.required
-    ),
+    doctorId: this.fb.control<number | null>(null, Validators.required),
 
-    date: this.fb.control(
-      '',
-      Validators.required
-    ),
+    date: this.fb.control('', Validators.required),
 
-    time: this.fb.control(
-      '',
-      Validators.required
-    ),
+    time: this.fb.control('', Validators.required),
 
-    status: this.fb.control<Appointment['status']>(
-      'Pending',
-      Validators.required
-    ),
+    status: this.fb.control<Appointment['status']>('Pending', Validators.required),
 
-    reason: this.fb.control(
-      ''
-    ),
+    reason: this.fb.control(''),
 
-    notes: this.fb.control(
-      ''
-    )
+    notes: this.fb.control('')
 
   });
 

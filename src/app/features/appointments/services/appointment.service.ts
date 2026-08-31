@@ -42,11 +42,7 @@ export class AppointmentService {
 
   getAppointment(id:number): Appointment | undefined {
 
-    return this.appointments.find(
-
-      appointment => appointment.id === id
-
-    );
+    return this.appointments.find(appointment => appointment.id === id);
 
   }
 
@@ -82,11 +78,7 @@ export class AppointmentService {
 
   deleteAppointment(id:number):void {
 
-    this.appointments = this.appointments.filter(
-
-        appointment => appointment.id !== id
-
-      );
+    this.appointments = this.appointments.filter(appointment => appointment.id !== id);
 
     this.saveAppointments();
 

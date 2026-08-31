@@ -1,16 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Appointments } from './appointments';
 
-describe('Appointments', () => {
-  let component: Appointments;
-  let fixture: ComponentFixture<Appointments>;
+import { AccessDenied } from './access-denied';
+
+describe('AccessDenied', () => {
+  let component: AccessDenied;
+  let fixture: ComponentFixture<AccessDenied>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Appointments],
+      imports: [AccessDenied],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Appointments);
+    fixture = TestBed.createComponent(AccessDenied);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
