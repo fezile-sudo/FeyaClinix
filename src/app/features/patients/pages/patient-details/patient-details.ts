@@ -1,16 +1,18 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+
 import { PatientService } from '../../services/patient';
 import { Patient } from '../../models/patient.model';
+
 import { AppointmentService } from '../../../appointments/services/appointment.service';
 import { Appointment } from '../../../appointments/models/appointment.model';
+
 import { DoctorService } from '../../../doctors/services/doctor.service';
 import { Doctor } from '../../../doctors/models/doctor.model';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-
-
 
 @Component({
   selector: 'app-patient-details',
@@ -26,7 +28,6 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class PatientDetails implements OnInit {
 
-
   private route = inject(ActivatedRoute);
 
   private patientService = inject(PatientService);
@@ -39,34 +40,78 @@ export class PatientDetails implements OnInit {
 
   appointments: Appointment[] = [];
 
+  ngOnInit(): void {
 
-ngOnInit(): void {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
 
-  const id = Number(this.route.snapshot.paramMap.get('id'));
-
-    this.patient = this.patientService.getPatient(id);
-
-    if(this.patient){
-      this.appointments = this.appointmentService.getAppointments().filter(appointment => appointment.patientId === this.patient!.id);
+    if (!Number.isInteger(id)) {
+      return;
     }
+
+    this.patientService
+      .getPatient(id)
+      .subscribe({
+
+        next: patient => {
+
+          this.patient = patient;
+
+          this.loadAppointments(patient.id);
+
+        },
+
+        error: error => {
+
+          console.error('Failed to load patient', error);
+
+        }
+
+      });
+
   }
 
+  private loadAppointments(
+    patientId: number
+  ): void {
 
-  getDoctorName(doctorId:number):string {
+    this.appointmentService
+      .getAppointments()
+      .subscribe({
 
-    const doctor = this.doctorService.getDoctor(doctorId);
+        next: appointments => {
 
-    return doctor
-      ? `Dr. ${doctor.firstName} ${doctor.lastName}`
-      : 'Unknown Doctor';
+          this.appointments = appointments.filter(appointment => appointment.patientId === patientId);
+
+        },
+
+        error: error => {
+
+          console.error('Failed to load appointments', error);
+
+        }
+
+      });
+
   }
 
+  getDoctorName(
+    doctorId: number
+  ): string {
 
-  getDepartment(doctorId:number):string {
+    const doctor =
+      this.doctorService
+        .getDoctor(doctorId);
 
-    const doctor = this.doctorService.getDoctor(doctorId);
+    return 'Loading...';
 
-    return doctor?.department ?? '-';
+  }
+
+  getDepartment(
+    doctorId: number
+  ): string {
+
+    return '-';
+
   }
 
 }

@@ -1,4 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
 
 export interface AuthUser {
   id: number;
@@ -7,8 +9,8 @@ export interface AuthUser {
   role: string;
 }
 
-interface DemoUser extends AuthUser {
-  password: string;
+interface LoginResponse {
+  user: AuthUser;
   token: string;
 }
 
@@ -22,77 +24,45 @@ interface AuthSession {
 })
 export class AuthService {
 
+  private readonly http = inject(HttpClient);
+
   private readonly storageKey = 'feyaclinix_auth';
+  private readonly apiUrl = 'http://localhost:3000/api';
 
-  private readonly demoUsers: DemoUser[] = [
-    {
-      id: 1,
-      name: 'Dr. Fezile Gulwa',
-      email: 'admin@feyaclinix.com',
-      password: 'Admin@123',
-      role: 'Administrator',
-      token: 'feyaclinix-admin-demo-token'
-    },
-    {
-      id: 2,
-      name: 'Dr. Sikhangele Gulwa',
-      email: 'doctor@feyaclinix.com',
-      password: 'Doctor@123',
-      role: 'Doctor',
-      token: 'feyaclinix-doctor-demo-token'
-    },
-    {
-      id: 3,
-      name: 'Aphiwe Gulwa',
-      email: 'reception@feyaclinix.com',
-      password: 'Reception@123',
-      role: 'Receptionist',
-      token: 'feyaclinix-reception-demo-token'
-    }
-  ];
+  private readonly currentUserSignal = signal<AuthUser | null>(this.loadUser());
 
-  private readonly currentUserSignal =
-    signal<AuthUser | null>(this.loadUser());
-
-  readonly currentUser =
-    this.currentUserSignal.asReadonly();
+  readonly currentUser = this.currentUserSignal.asReadonly();
 
   isAuthenticated(): boolean {
     return this.currentUserSignal() !== null;
   }
 
-  login(email: string, password: string): boolean {
+  login(
+    email: string,
+    password: string
+  ): Observable<LoginResponse> {
 
-    const demoUser = this.demoUsers.find(
-      user =>
-        user.email === email &&
-        user.password === password
-    );
+    return this.http
+      .post<LoginResponse>(
+        `${this.apiUrl}/auth/login`,
+        {
+          email,
+          password
+        }
+      )
+      .pipe(
+        tap(response => {
 
-    if (!demoUser) {
-      return false;
-    }
+          const session: AuthSession = {
+            user: response.user,
+            token: response.token
+          };
 
-    const user: AuthUser = {
-      id: demoUser.id,
-      name: demoUser.name,
-      email: demoUser.email,
-      role: demoUser.role
-    };
+          localStorage.setItem(this.storageKey, JSON.stringify(session));
 
-    const session: AuthSession = {
-      user,
-      token: demoUser.token
-    };
-
-    localStorage.setItem(
-      this.storageKey,
-      JSON.stringify(session)
-    );
-
-    this.currentUserSignal.set(user);
-
-    return true;
+          this.currentUserSignal.set(response.user);
+        })
+      );
   }
 
   logout(): void {
@@ -116,8 +86,7 @@ export class AuthService {
 
   private loadSession(): AuthSession | null {
 
-    const storedSession =
-      localStorage.getItem(this.storageKey);
+    const storedSession = localStorage.getItem(this.storageKey);
 
     if (!storedSession) {
       return null;
@@ -131,5 +100,6 @@ export class AuthService {
     }
   }
 }
+
 
 

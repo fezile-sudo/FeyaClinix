@@ -1,9 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
+
 import { DoctorService } from '../../services/doctor.service';
 import { Doctor } from '../../models/doctor.model';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -26,18 +32,14 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './doctor-form.html',
   styleUrl: './doctor-form.scss'
 })
-export class DoctorForm {
+export class DoctorForm implements OnInit {
 
   private fb = inject(FormBuilder);
-
   private router = inject(Router);
-
   private route = inject(ActivatedRoute);
-
   private doctorService = inject(DoctorService);
 
   doctorId?: number;
-
   isEditMode = false;
 
   specialties = [
@@ -110,9 +112,15 @@ export class DoctorForm {
 
     licenseNumber: ['', Validators.required],
 
-    yearsOfExperience: [0, [Validators.required, Validators.min(0)]],
+    yearsOfExperience: [
+      0,
+      [Validators.required, Validators.min(0)]
+    ],
 
-    consultationFee: [0, [Validators.required, Validators.min(0)]],
+    consultationFee: [
+      0,
+      [Validators.required, Validators.min(0)]
+    ],
 
     availability: ['', Validators.required]
 
@@ -120,48 +128,72 @@ export class DoctorForm {
 
   ngOnInit(): void {
 
-    this.doctorForm.get('specialty')?.valueChanges.subscribe(specialty => {
+    this.doctorForm
+      .get('specialty')
+      ?.valueChanges
+      .subscribe(specialty => {
 
-      if (!specialty) {
-        return;
-      }
+        if (!specialty) {
+          return;
+        }
 
-      const department = this.specialtyDepartmentMap[specialty];
+        const department = this.specialtyDepartmentMap[specialty];
 
-      this.doctorForm.patchValue({
-        department
+        this.doctorForm.patchValue({
+          department
+        });
+
       });
-
-    });
 
     const id = this.route.snapshot.paramMap.get('id');
 
-    if (id) {
-
-      this.isEditMode = true;
-
-      this.doctorId = Number(id);
-
-      const doctor = this.doctorService.getDoctor(this.doctorId);
-
-      if (doctor) {
-
-        this.doctorForm.patchValue({
-          ...doctor,
-          yearsOfExperience: doctor.yearsOfExperience,
-          consultationFee: doctor.consultationFee
-        });
-
-      }
-
+    if (!id) {
+      return;
     }
 
+    this.isEditMode = true;
+    this.doctorId = Number(id);
+
+    this.doctorService
+      .getDoctor(this.doctorId)
+      .subscribe({
+        next: doctor => {
+
+          this.doctorForm.patchValue({
+            firstName: doctor.firstName,
+            lastName: doctor.lastName,
+            gender: doctor.gender,
+            dateOfBirth: doctor.dateOfBirth,
+            phone: doctor.phone,
+            email: doctor.email,
+            address: doctor.address,
+            specialty: doctor.specialty,
+            department: doctor.department,
+            qualification: doctor.qualification,
+            licenseNumber: doctor.licenseNumber,
+            yearsOfExperience: doctor.yearsOfExperience,
+            consultationFee: doctor.consultationFee,
+            availability: doctor.availability
+          });
+
+        },
+
+        error: error => {
+
+          console.error('Failed to load doctor', error);
+
+          this.router.navigate(['/doctors']);
+
+        }
+      });
   }
 
   saveDoctor(): void {
 
     if (this.doctorForm.invalid) {
+
       this.doctorForm.markAllAsTouched();
+
       return;
     }
 
@@ -169,21 +201,42 @@ export class DoctorForm {
 
     if (this.isEditMode && this.doctorId) {
 
-      this.doctorService.updateDoctor(
-        this.doctorId,
-        doctor
-      );
+      this.doctorService
+        .updateDoctor(
+          this.doctorId,
+          doctor
+        )
+        .subscribe({
+
+          next: () => {
+            this.router.navigate(['/doctors']);
+          },
+
+          error: error => {
+            console.error('Failed to update doctor', error);
+          }
+
+        });
 
     } else {
 
-      this.doctorService.createDoctor(
-        doctor
-      );
+      this.doctorService
+        .createDoctor(doctor)
+        .subscribe({
+
+          next: () => {
+            this.router.navigate(['/doctors']);
+          },
+
+          error: error => {
+            console.error('Failed to create doctor', error);
+          }
+
+        });
 
     }
-
-    this.router.navigate(['/doctors']);
 
   }
 
 }
+

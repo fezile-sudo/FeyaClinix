@@ -1,9 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
+
 import { PatientService } from '../../services/patient';
 import { Patient } from '../../models/patient.model';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -13,6 +19,7 @@ import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-patient-form',
+  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -25,7 +32,7 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './patient-form.html',
   styleUrl: './patient-form.scss',
 })
-export class PatientForm {
+export class PatientForm implements OnInit {
 
   private fb = inject(FormBuilder);
 
@@ -35,9 +42,10 @@ export class PatientForm {
 
   private patientService = inject(PatientService);
 
- patientId?: number;
 
- isEditMode = false; 
+  patientId?: number;
+
+  isEditMode = false;
 
 
   patientForm = this.fb.group({
@@ -50,11 +58,17 @@ export class PatientForm {
 
     bloodGroup: ['', Validators.required],
 
-    dateOfBirth: ['',Validators.required],
+    dateOfBirth: ['', Validators.required],
 
     phone: ['', Validators.required],
 
-    email: ['', [ Validators.required, Validators.email]],
+    email: [
+      '',
+      [
+        Validators.required,
+        Validators.email
+      ]
+    ],
 
     address: [''],
 
@@ -70,39 +84,114 @@ export class PatientForm {
 
   });
 
-ngOnInit() {
 
-  const id = this.route.snapshot.paramMap.get('id');
+  ngOnInit(): void {
+
+    const id = this.route.snapshot.paramMap.get('id');
 
 
-  if (id) {
+    if (id) {
 
-    this.isEditMode = true;
+      this.isEditMode = true;
 
-    this.patientId = Number(id);
+      this.patientId = Number(id);
 
-    const patient = this.patientService.getPatient(this.patientId);
 
-    if (patient) {this.patientForm.patchValue(patient);}
+      this.patientService.getPatient(this.patientId).subscribe({
+
+          next: patient => {
+
+            this.patientForm.patchValue(patient);
+
+          },
+
+          error: error => {
+
+            console.error('Failed to load patient', error);
+
+          }
+
+        });
+
+    }
 
   }
-}
 
-savePatient() {
-  if (this.patientForm.invalid) {
-    return;
+
+  savePatient(): void {
+
+    if (this.patientForm.invalid) {
+
+      this.patientForm.markAllAsTouched();
+
+      return;
+
+    }
+
+
+    const formValue = this.patientForm.value as Patient;
+
+
+    if (
+      this.isEditMode &&
+      this.patientId !== undefined
+    ) {
+
+      this.patientService.updatePatient(this.patientId, formValue).subscribe({
+
+          next: () => {
+
+            this.router.navigate([
+              '/patients'
+            ]);
+
+          },
+
+          error: error => {
+
+            console.error('Failed to update patient', error);
+
+          }
+
+        });
+
+    } else {
+
+      const newPatient: Patient = {
+
+        ...formValue,
+
+        id: 0,
+
+        status: 'Active',
+
+        createdAt: new Date().toISOString()
+
+      };
+
+
+      this.patientService
+        .createPatient(newPatient)
+        .subscribe({
+
+          next: () => {
+
+            this.router.navigate([
+              '/patients'
+            ]);
+
+          },
+
+          error: error => {
+
+            console.error('Failed to create patient', error);
+
+          }
+
+        });
+
+    }
+
   }
-  if (this.isEditMode && this.patientId) {
-    this.patientService.updatePatient(this.patientId, this.patientForm.value as Patient);
 
-  } else {
-
-  const newPatient: Patient = {...this.patientForm.value as Patient, id: Date.now(), status: 'Active', createdAt: new Date().toISOString()};
-
-  this.patientService.createPatient(newPatient);
-
-}
-
-  this.router.navigate(['/patients']);
-}
 }

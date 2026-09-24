@@ -1,50 +1,73 @@
-import { Component, ViewChild, inject } from '@angular/core';
+import {
+AfterViewInit,
+Component,
+OnInit,
+ViewChild,
+inject
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DoctorService } from '../../services/doctor.service';
 import { Doctor } from '../../models/doctor.model';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import {
+MatTableDataSource,
+MatTableModule
+} from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import {
+MatPaginator,
+MatPaginatorModule
+} from '@angular/material/paginator';
+import {
+MatSort,
+MatSortModule
+} from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { RouterLink, Router } from '@angular/router';
+import {
+RouterLink
+} from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteConfirmation } from '../delete-confirmation/delete-confirmation';
 import { PreferencesService } from '../../../settings/services/preferences.service';
 
 @Component({
-  selector: 'app-doctor-list',
-  imports: [
-    CommonModule,
-    RouterLink,
-    MatTableModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatChipsModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatInputModule,
-    MatFormFieldModule
-  ],
-  templateUrl: './doctor-list.html',
-  styleUrl: './doctor-list.scss'
+selector: 'app-doctor-list',
+imports: [
+CommonModule,
+RouterLink,
+MatTableModule,
+MatCardModule,
+MatButtonModule,
+MatIconModule,
+MatChipsModule,
+MatPaginatorModule,
+MatSortModule,
+MatInputModule,
+MatFormFieldModule
+],
+templateUrl: './doctor-list.html',
+styleUrl: './doctor-list.scss'
 })
-export class DoctorList {
+export class DoctorList implements OnInit, AfterViewInit {
 
 private doctorService = inject(DoctorService);
 
 private dialog = inject(MatDialog);
 
-private router = inject(Router);
-
 private preferencesService = inject(PreferencesService);
 
-displayedColumns: string[] = ['id','name','specialty','department','availability','status','actions'];
+displayedColumns: string[] = [
+'id',
+'name',
+'specialty',
+'department',
+'availability',
+'status',
+'actions'
+];
 
 dataSource = new MatTableDataSource<Doctor>();
 
@@ -54,44 +77,95 @@ paginator!: MatPaginator;
 @ViewChild(MatSort)
 sort!: MatSort;
 
-ngOnInit() {
-  this.dataSource.data = this.doctorService.getDoctors();
+ngOnInit(): void {
+
+
+this.doctorService
+  .doctors$
+  .subscribe(doctors => {
+
+    this.dataSource.data = doctors;
+
+  });
+
+
+this.loadDoctors();
+
+
 }
 
-ngAfterViewInit() {
+private loadDoctors(): void {
 
-  const preferences = this.preferencesService.getPreferences();
+this.doctorService
+  .getDoctors()
+  .subscribe({
 
-  this.paginator.pageSize = preferences.itemsPerPage;
+    error: error => {
 
-  this.dataSource.paginator = this.paginator;
+      console.error('Failed to load doctors', error);
 
-  this.dataSource.sort = this.sort;
+    }
+
+  });
+
 
 }
 
-applyFilter(event: Event){
+ngAfterViewInit(): void {
+
+const preferences = this.preferencesService.getPreferences();
+
+
+this.paginator.pageSize = preferences.itemsPerPage;
+
+
+this.dataSource.paginator = this.paginator;
+
+this.dataSource.sort = this.sort;
+
+
+}
+
+applyFilter(event: Event): void {
 
 const filterValue = (event.target as HTMLInputElement).value;
+
+
 this.dataSource.filter = filterValue.trim().toLowerCase();
+
 
 }
 
-
-deleteDoctor(id:number){
+deleteDoctor(id: number): void {
 
 const dialogRef = this.dialog.open(DeleteConfirmation);
 
-dialogRef.afterClosed().subscribe(result=>{
 
-if(result){
-this.doctorService.deleteDoctor(id);
-this.dataSource.data = [...this.doctorService.getDoctors()];
+dialogRef
+  .afterClosed()
+  .subscribe(result => {
+
+    if (!result) {
+      return;
+    }
+
+
+    this.doctorService
+      .deleteDoctor(id)
+      .subscribe({
+
+        error: error => {
+
+          console.error('Failed to delete doctor', error);
+
+        }
+
+      });
+
+  });
+
 
 }
 
-});
-
 }
 
-}

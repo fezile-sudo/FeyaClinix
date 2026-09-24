@@ -1,24 +1,58 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  inject
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  Validators
+} from '@angular/forms';
+
 import { FormsModule } from '@angular/forms';
+
+import { Subscription } from 'rxjs';
+
 import { Appointment } from '../../models/appointment.model';
 import { AppointmentService } from '../../services/appointment.service';
+
 import { PatientService } from '../../../patients/services/patient';
 import { DoctorService } from '../../../doctors/services/doctor.service';
+
 import { Patient } from '../../../patients/models/patient.model';
 import { Doctor } from '../../../doctors/models/doctor.model';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+
+import {
+  MatTableDataSource,
+  MatTableModule
+} from '@angular/material/table';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+
+import {
+  MatPaginator,
+  MatPaginatorModule
+} from '@angular/material/paginator';
+
+import {
+  MatSort,
+  MatSortModule
+} from '@angular/material/sort';
+
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+
 import { PreferencesService } from '../../../settings/services/preferences.service';
 
 
@@ -46,7 +80,9 @@ import { PreferencesService } from '../../../settings/services/preferences.servi
   templateUrl: './appointments.html',
   styleUrl: './appointments.scss'
 })
-export class AppointmentsComponent implements OnInit {
+export class AppointmentsComponent
+  implements OnInit, AfterViewInit, OnDestroy {
+
 
   private appointmentService = inject(AppointmentService);
 
@@ -57,6 +93,9 @@ export class AppointmentsComponent implements OnInit {
   private preferencesService = inject(PreferencesService);
 
   private fb = inject(FormBuilder);
+
+
+  private subscriptions = new Subscription();
 
 
   appointments: Appointment[] = [];
@@ -78,6 +117,7 @@ export class AppointmentsComponent implements OnInit {
 
   editingAppointmentId: number | null = null;
 
+
   displayedColumns: string[] = [
     'patient',
     'doctor',
@@ -88,7 +128,9 @@ export class AppointmentsComponent implements OnInit {
     'actions'
   ];
 
+
   dataSource = new MatTableDataSource<Appointment>();
+
 
   @ViewChild(MatPaginator)
   paginator!: MatPaginator;
@@ -118,35 +160,11 @@ export class AppointmentsComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.appointments = this.appointmentService.getAppointments();
+    this.loadPatients();
 
-    this.patients = this.patientService.getPatients();
+    this.loadDoctors();
 
-    this.doctors = this.doctorService.getDoctors();
-
-    this.dataSource.data = this.appointments;
-
-    this.dataSource.filterPredicate = (appointment, filter) => {
-
-      const patient = this.getPatientName(appointment.patientId).toLowerCase();
-
-      const doctor = this.getDoctorName(appointment.doctorId).toLowerCase();
-
-      const department = this.getDepartment(appointment.doctorId).toLowerCase();
-
-      const search = filter.toLowerCase();
-
-      const matchesSearch =
-          !search ||
-          patient.includes(search) ||
-          doctor.includes(search) ||
-          department.includes(search);
-
-      const matchesStatus = this.selectedStatus === 'All' || appointment.status === this.selectedStatus;
-
-
-        return matchesSearch && matchesStatus;
-      };
+    this.loadAppointments();
 
   }
 
@@ -163,12 +181,159 @@ export class AppointmentsComponent implements OnInit {
 
   }
 
-   applyFilter(): void {
-    this.dataSource.filter = this.searchTerm.trim().toLowerCase();
+
+  ngOnDestroy(): void {
+
+    this.subscriptions.unsubscribe();
+
   }
 
-  applyStatusFilter(): void {
+
+  private loadPatients(): void {
+
+    this.patientService
+      .getPatients()
+      .subscribe({
+
+        next: patients => {
+
+          this.patients = patients;
+
+          this.refreshTable();
+
+        },
+
+        error: error => {
+
+          console.error('Failed to load patients', error);
+
+        }
+
+      });
+
+  }
+
+
+  private loadDoctors(): void {
+
+    this.doctorService
+      .getDoctors()
+      .subscribe({
+
+        next: doctors => {
+
+          this.doctors = doctors;
+
+          this.updateSelectedDoctor();
+
+          this.refreshTable();
+
+        },
+
+        error: error => {
+
+          console.error('Failed to load doctors', error);
+
+        }
+
+      });
+
+  }
+
+
+ 
+  private loadAppointments(): void {
+
+    this.subscriptions.add(
+
+      this.appointmentService
+        .appointments$
+        .subscribe({
+
+          next: appointments => {
+
+            this.appointments = appointments;
+
+            this.refreshTable();
+
+          },
+
+          error: error => {
+
+            console.error('Failed to receive appointments', error);
+
+          }
+
+        })
+
+    );
+
+
+    this.appointmentService
+      .getAppointments()
+      .subscribe({
+
+        error: error => {
+
+          console.error('Failed to load appointments', error);
+
+        }
+
+      });
+
+  }
+
+
+  private refreshTable(): void {
+
+    this.dataSource.data = this.appointments;
+
+    this.dataSource.filterPredicate = (appointment, filter) => {
+
+        const patient = this.getPatientName(appointment.patientId).toLowerCase();
+
+        const doctor = this.getDoctorName(appointment.doctorId).toLowerCase();
+
+        const department = this.getDepartment(appointment.doctorId).toLowerCase();
+
+        const search = filter.toLowerCase();
+
+        const matchesSearch =
+          !search ||
+          patient.includes(search) ||
+          doctor.includes(search) ||
+          department.includes(search);
+
+        const matchesStatus =
+          this.selectedStatus === 'All' ||
+          appointment.status ===
+            this.selectedStatus;
+
+        return (
+          matchesSearch &&
+          matchesStatus
+        );
+
+      };
+
+
+    this.applyFilter();
+
+  }
+
+
+  applyFilter(): void {
+
     this.dataSource.filter = this.searchTerm.trim().toLowerCase();
+
+  }
+
+
+  applyStatusFilter(): void {
+
+    
+    this.dataSource.filter = this.searchTerm.trim().toLowerCase();
+
   }
 
 
@@ -178,7 +343,8 @@ export class AppointmentsComponent implements OnInit {
 
   }
 
-   closeModal(): void {
+
+  closeModal(): void {
 
     this.showModal = false;
 
@@ -188,26 +354,58 @@ export class AppointmentsComponent implements OnInit {
 
     this.selectedDoctor = undefined;
 
-    this.appointmentForm.reset({status: 'Pending'});
+    this.appointmentForm.reset({
+
+      patientId: null,
+
+      doctorId: null,
+
+      date: '',
+
+      time: '',
+
+      status: 'Pending',
+
+      reason: '',
+
+      notes: ''
+
+    });
 
   }
+
 
   onDoctorChange(): void {
 
-    const doctorId = Number(this.appointmentForm.value.doctorId);
-
-    this.selectedDoctor = this.doctors.find(doctor => doctor.id === doctorId);
+    this.updateSelectedDoctor();
 
   }
 
 
+  private updateSelectedDoctor(): void {
+
+    const doctorId = Number(this.appointmentForm.value.doctorId);
+
+    this.selectedDoctor =
+      this.doctors.find(doctor => doctor.id === doctorId);
+
+  }
+
+
+ 
   saveAppointment(): void {
 
     if (this.appointmentForm.invalid) {
+
+      this.appointmentForm.markAllAsTouched();
+
       return;
+
     }
 
-   const value = this.appointmentForm.getRawValue();
+
+    const value = this.appointmentForm.getRawValue();
+
 
     if (
       value.patientId === null ||
@@ -221,16 +419,58 @@ export class AppointmentsComponent implements OnInit {
 
     }
 
-    const doctorAvailable = this.appointmentService.isDoctorAvailable(
+
+    this.appointmentService
+      .isDoctorAvailable(
         value.doctorId,
         value.date,
         value.time,
-        this.editingAppointmentId ?? undefined
-      );
+        this.editingAppointmentId ??
+          undefined
+      )
+      .subscribe({
 
-    if (!doctorAvailable) {
+        next: doctorAvailable => {
 
-      alert('This doctor already has an appointment at this date and time.');
+          if (!doctorAvailable) {
+
+            alert(
+              'This doctor already has an appointment at this date and time.'
+            );
+
+            return;
+
+          }
+
+          this.saveAppointmentToApi();
+
+        },
+
+        error: error => {
+
+          console.error('Failed to check doctor availability', error);
+
+          alert('Unable to check doctor availability.');
+
+        }
+
+      });
+
+  }
+
+
+  private saveAppointmentToApi(): void {
+
+    const value = this.appointmentForm.getRawValue();
+
+
+    if (
+      value.patientId === null ||
+      value.doctorId === null ||
+      !value.date ||
+      !value.time ||
+      !value.status
+    ) {
 
       return;
 
@@ -239,39 +479,80 @@ export class AppointmentsComponent implements OnInit {
 
     const appointment: Appointment = {
 
-      id: this.editingAppointmentId ?? Date.now(),
+      id: this.editingAppointmentId ?? 0,
+
       patientId: value.patientId,
+
       doctorId: value.doctorId,
+
       date: value.date,
+
       time: value.time,
+
       status: value.status,
+
       reason: value.reason ?? '',
+
       notes: value.notes ?? ''
 
     };
 
+
+    
     if (
       this.isEditing &&
       this.editingAppointmentId !== null
     ) {
 
-      this.appointmentService.updateAppointment(this.editingAppointmentId, appointment);
+      this.appointmentService
+        .updateAppointment(
+          this.editingAppointmentId,
+          appointment
+        )
+        .subscribe({
+
+          next: () => {
+
+             this.closeModal();
+
+          },
+
+          error: error => {
+
+            console.error('Failed to update appointment', error);
+
+            alert('Failed to update appointment.');
+
+          }
+
+        });
+
+      return;
 
     }
 
-    else {
 
-      this.appointmentService.createAppointment(
-        appointment
-      );
+    
+    this.appointmentService.createAppointment(appointment).subscribe({
 
-    }
+        next: () => {
 
-    this.refreshAppointments();
+          this.closeModal();
 
-    this.closeModal();
+        },
+
+        error: error => {
+
+          console.error('Failed to create appointment', error);
+
+          alert('Failed to create appointment.');
+
+        }
+
+      });
 
   }
+
 
   editAppointment(
     appointment: Appointment
@@ -281,17 +562,25 @@ export class AppointmentsComponent implements OnInit {
 
     this.editingAppointmentId = appointment.id;
 
+
     this.appointmentForm.patchValue({
 
       patientId: appointment.patientId,
+
       doctorId: appointment.doctorId,
+
       date: appointment.date,
+
       time: appointment.time,
+
       status: appointment.status,
+
       reason: appointment.reason ?? '',
+
       notes: appointment.notes ?? ''
 
     });
+
 
     this.onDoctorChange();
 
@@ -299,6 +588,8 @@ export class AppointmentsComponent implements OnInit {
 
   }
 
+
+  
   deleteAppointment(
     id: number
   ): void {
@@ -306,26 +597,62 @@ export class AppointmentsComponent implements OnInit {
     const confirmed = confirm('Are you sure you want to delete this appointment?');
 
     if (!confirmed) {
+
       return;
 
     }
 
-    this.appointmentService.deleteAppointment(id);
 
-    this.refreshAppointments();
+    this.appointmentService.deleteAppointment(id).subscribe({
+
+        next: () => {
+
+          
+        },
+
+        error: error => {
+
+          console.error('Failed to delete appointment', error);
+
+          alert('Failed to delete appointment.');
+
+        }
+
+      });
 
   }
+
 
   changeStatus(
     appointment: Appointment,
     status: Appointment['status']
   ): void {
 
-    const updated: Appointment = {...appointment, status};
+    const updatedAppointment: Appointment = {
 
-    this.appointmentService.updateAppointment(appointment.id, updated);
+      ...appointment,
 
-    this.refreshAppointments();
+      status
+
+    };
+
+
+    this.appointmentService.updateAppointment(appointment.id, updatedAppointment).subscribe({
+
+        next: () => {
+
+          
+        },
+
+        error: error => {
+
+          console.error('Failed to update appointment status', error);
+
+          alert('Failed to update appointment status.');
+
+        }
+
+      });
 
   }
 
@@ -334,7 +661,8 @@ export class AppointmentsComponent implements OnInit {
     id: number
   ): string {
 
-    const patient = this.patientService.getPatient(id);
+    const patient = this.patients.find(patient => patient.id === id);
+
 
     return patient
       ? `${patient.firstName} ${patient.lastName}`
@@ -347,7 +675,8 @@ export class AppointmentsComponent implements OnInit {
     id: number
   ): string {
 
-    const doctor = this.doctorService.getDoctor(id);
+    const doctor = this.doctors.find( doctor => doctor.id === id);
+
 
     return doctor
       ? `Dr. ${doctor.firstName} ${doctor.lastName}`
@@ -360,20 +689,10 @@ export class AppointmentsComponent implements OnInit {
     id: number
   ): string {
 
-    const doctor = this.doctorService.getDoctor(id);
+    const doctor = this.doctors.find(doctor => doctor.id === id);
+
 
     return doctor?.department ?? '-';
-
-  }
-
-
-    private refreshAppointments(): void {
-
-    this.appointments = this.appointmentService.getAppointments();
-
-    this.dataSource.data = this.appointments;
-
-    this.dataSource.filter = this.searchTerm.trim().toLowerCase();
 
   }
 

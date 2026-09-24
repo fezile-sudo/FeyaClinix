@@ -1,86 +1,126 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
+
 import { Doctor } from '../models/doctor.model';
 
-
-@Injectable({providedIn: 'root'})
-
+@Injectable({
+  providedIn: 'root'
+})
 export class DoctorService {
 
-  private storageKey = 'feyaClinix_doctors';
+  private readonly http = inject(HttpClient);
 
-  private doctors: Doctor[] = this.loadDoctors();
+  private readonly apiUrl = 'http://localhost:3000/api/doctors';
 
+  private readonly doctorsSubject = new BehaviorSubject<Doctor[]>([]);
 
-  private loadDoctors(): Doctor[] {
-
-    const data = localStorage.getItem(this.storageKey);
-
-    if(!data){
-      return [];
-    }
-
-    try {
-      return JSON.parse(data);
-    }
-    catch(error){
-      console.error('Failed loading doctors', error);
-      return [];
-    }
-
-  }
+  readonly doctors$ = this.doctorsSubject.asObservable();
 
 
-  private saveDoctors(): void {
+  getDoctors(): Observable<Doctor[]> {
 
-    localStorage.setItem(this.storageKey, JSON.stringify(this.doctors));
+    return this.http
+      .get<Doctor[]>(this.apiUrl)
+      .pipe(
 
-  }
+        tap(doctors => {
+          this.doctorsSubject.next(doctors);
+        })
 
-  getDoctors(): Doctor[] {
-    return this.doctors;
-  }
-
-
-  getDoctor(id:number): Doctor | undefined {
-
-    return this.doctors.find(doctor => doctor.id === id);
+      );
 
   }
 
 
-  createDoctor(doctor:Doctor):void {
+  getDoctor(id: number): Observable<Doctor> {
 
-    const newDoctor: Doctor = {...doctor, id: Date.now()};
-
-    this.doctors.push(newDoctor);
-
-    this.saveDoctors();
+    return this.http.get<Doctor>(`${this.apiUrl}/${id}`);
 
   }
 
 
-  updateDoctor(id:number, updatedDoctor:Doctor):void {
+  createDoctor(
+    doctor: Doctor
+  ): Observable<Doctor> {
 
-    const index = this.doctors.findIndex(doctor => doctor.id === id);
+    return this.http
+      .post<Doctor>(
+        this.apiUrl,
+        doctor
+      )
+      .pipe(
 
-    if(index !== -1){
+        tap(newDoctor => {
 
-      this.doctors[index] = {...updatedDoctor, id};
+          const currentDoctors = this.doctorsSubject.value;
 
-      this.saveDoctors();
+          this.doctorsSubject.next([
+            ...currentDoctors,
+            newDoctor
+          ]);
 
-    }
+        })
+
+      );
 
   }
 
 
-  deleteDoctor(id:number):void {
+  updateDoctor(
+    id: number,
+    updatedDoctor: Doctor
+  ): Observable<Doctor> {
 
-    this.doctors = this.doctors.filter(doctor => doctor.id !== id);
+    return this.http
+      .put<Doctor>(
+        `${this.apiUrl}/${id}`,
+        updatedDoctor
+      )
+      .pipe(
 
-    this.saveDoctors();
+        tap(updated => {
+
+          const doctors = this.doctorsSubject.value.map(
+              doctor =>
+                doctor.id === id
+                  ? updated
+                  : doctor
+            );
+
+          this.doctorsSubject.next(doctors);
+
+        })
+
+      );
 
   }
 
+
+  deleteDoctor(
+    id: number
+  ): Observable<void> {
+
+    return this.http
+      .delete<void>(
+        `${this.apiUrl}/${id}`
+      )
+      .pipe(
+
+        tap(() => {
+
+          const doctors = this.doctorsSubject.value.filter(
+              doctor =>
+                doctor.id !== id
+            );
+
+          this.doctorsSubject.next(doctors);
+
+        })
+
+      );
+
+  }
 
 }
+

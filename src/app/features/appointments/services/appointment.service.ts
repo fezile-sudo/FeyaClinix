@@ -1,113 +1,173 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import {
+  BehaviorSubject,
+  Observable,
+  map,
+  tap
+} from 'rxjs';
+
 import { Appointment } from '../models/appointment.model';
 
-
-@Injectable({providedIn: 'root'})
-
+@Injectable({
+  providedIn: 'root'
+})
 export class AppointmentService {
 
-  private storageKey = 'feyaClinix_appointments';
+  private readonly http = inject(HttpClient);
 
-  private appointments: Appointment[] = this.loadAppointments();
+  private readonly apiUrl = 'http://localhost:3000/api/appointments';
 
-  private loadAppointments(): Appointment[] {
+  private readonly appointmentsSubject = new BehaviorSubject<Appointment[]>([]);
 
-    const data = localStorage.getItem(this.storageKey);
+  readonly appointments$ = this.appointmentsSubject.asObservable();
 
-    if(!data){
-      return [];
-    }
 
-    try {
-      return JSON.parse(data);
-    }
-    catch(error){
-      console.error('Failed loading appointments',);
-      return [];
-    }
+  getAppointments(): Observable<Appointment[]> {
 
-  }
+    return this.http
+      .get<Appointment[]>(this.apiUrl)
+      .pipe(
 
-  private saveAppointments(): void {
+        tap(appointments => {
+          this.appointmentsSubject.next(
+            appointments
+          );
+        })
 
-    localStorage.setItem(this.storageKey, JSON.stringify(this.appointments));
+      );
 
   }
 
 
-  getAppointments(): Appointment[] {
-    return this.appointments;
-  }
+  getAppointment(
+    id: number
+  ): Observable<Appointment> {
 
-
-  getAppointment(id:number): Appointment | undefined {
-
-    return this.appointments.find(appointment => appointment.id === id);
-
-  }
-
-
-
-
-
-  createAppointment(appointment: Appointment): void {
-
-    const newAppointment: Appointment = {...appointment, id: appointment.id || Date.now()};
-
-    this.appointments.push(newAppointment);
-
-    this.saveAppointments();
-
-  }
-
-
-  updateAppointment(id:number, updatedAppointment: Appointment): void {
-
-    const index = this.appointments.findIndex(appointment => appointment.id === id);
-
-    if(index !== -1){
-
-      this.appointments[index] = {...updatedAppointment, id};
-
-      this.saveAppointments();
-
-    }
-
-  }
-
-
-  deleteAppointment(id:number):void {
-
-    this.appointments = this.appointments.filter(appointment => appointment.id !== id);
-
-    this.saveAppointments();
-
-  }
-
-
-  getTodayAppointmentsCount(): number {
-
-    const today = new Date();
-
-    const formatted = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-
-    return this.appointments.filter( appointment => appointment.date === formatted).length;
-
-  }
-
-
-  isDoctorAvailable(doctorId:number, date:string, time:string, ignoreAppointmentId?:number): boolean {
-
-    return !this.appointments.some(
-
-      appointment =>
-        appointment.doctorId === doctorId &&
-        appointment.date === date &&
-        appointment.time === time &&
-        appointment.id !== ignoreAppointmentId
-
+    return this.http.get<Appointment>(
+      `${this.apiUrl}/${id}`
     );
 
   }
 
+
+  isDoctorAvailable(
+    doctorId: number,
+    date: string,
+    time: string,
+    ignoreAppointmentId?: number
+  ): Observable<boolean> {
+
+    const params = new URLSearchParams({
+      doctorId: String(doctorId),
+      date,
+      time
+    });
+
+    if (ignoreAppointmentId !== undefined) {
+
+      params.set('ignoreAppointmentId', String(ignoreAppointmentId));
+
+    }
+
+    return this.http
+      .get<{ available: boolean }>(
+        `${this.apiUrl}/availability?${params.toString()}`
+      )
+      .pipe(
+        map(response => response.available)
+      );
+
+  }
+
+
+  createAppointment(
+    appointment: Appointment
+  ): Observable<Appointment> {
+
+    return this.http
+      .post<Appointment>(
+        this.apiUrl,
+        appointment
+      )
+      .pipe(
+
+        tap(newAppointment => {
+
+          const currentAppointments = this.appointmentsSubject.value;
+
+          this.appointmentsSubject.next([
+            ...currentAppointments,
+            newAppointment
+          ]);
+
+        })
+
+      );
+
+  }
+
+
+  updateAppointment(
+    id: number,
+    updatedAppointment: Appointment
+  ): Observable<Appointment> {
+
+    return this.http
+      .put<Appointment>(
+        `${this.apiUrl}/${id}`,
+        updatedAppointment
+      )
+      .pipe(
+
+        tap(updated => {
+
+          const appointments =
+            this.appointmentsSubject.value.map(
+              appointment =>
+                appointment.id === id
+                  ? updated
+                  : appointment
+            );
+
+          this.appointmentsSubject.next(
+            appointments
+          );
+
+        })
+
+      );
+
+  }
+
+
+  deleteAppointment(
+    id: number
+  ): Observable<void> {
+
+    return this.http
+      .delete<void>(
+        `${this.apiUrl}/${id}`
+      )
+      .pipe(
+
+        tap(() => {
+
+          const appointments = this.appointmentsSubject.value.filter(
+              appointment =>
+                appointment.id !== id
+            );
+
+          this.appointmentsSubject.next(
+            appointments
+          );
+
+        })
+
+      );
+
+  }
+
 }
+
+

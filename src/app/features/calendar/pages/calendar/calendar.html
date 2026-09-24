@@ -19,7 +19,8 @@
 
         <mat-option value="">All Doctors</mat-option>
 
-    @for(doctor of doctorService.getDoctors(); track doctor.id){
+    @for(doctor of doctors; track doctor.id){
+
         <mat-option [value]="doctor.id">
           Dr. {{ doctor.firstName }} {{ doctor.lastName }}
         </mat-option>

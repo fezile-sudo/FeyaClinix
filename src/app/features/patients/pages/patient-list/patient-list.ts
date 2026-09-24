@@ -1,115 +1,190 @@
-import { Component, inject, ViewChild } from '@angular/core';
+
+import {
+Component,
+inject,
+ViewChild,
+OnInit,
+AfterViewInit
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
+
 import { PatientService } from '../../services/patient';
 import { Patient } from '../../models/patient.model';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+
+import {
+MatTableDataSource,
+MatTableModule
+} from '@angular/material/table';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+
+import {
+MatPaginator,
+MatPaginatorModule
+} from '@angular/material/paginator';
+
+import {
+MatSort,
+MatSortModule
+} from '@angular/material/sort';
+
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+
 import { RouterLink } from '@angular/router';
+
 import { MatDialog } from '@angular/material/dialog';
+
 import { DeleteConfirmation } from '../delete-confirmation/delete-confirmation';
+
 import { PreferencesService } from '../../../settings/services/preferences.service';
 
-
 @Component({
-  selector: 'app-patient-list',
-  imports: [
-    CommonModule,
-    RouterLink,
-    MatTableModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatChipsModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatInputModule,
-    MatFormFieldModule
-  ],
-  templateUrl: './patient-list.html',
-  styleUrl: './patient-list.scss',
+selector: 'app-patient-list',
+standalone: true,
+imports: [
+CommonModule,
+RouterLink,
+MatTableModule,
+MatCardModule,
+MatButtonModule,
+MatIconModule,
+MatChipsModule,
+MatPaginatorModule,
+MatSortModule,
+MatInputModule,
+MatFormFieldModule
+],
+templateUrl: './patient-list.html',
+styleUrl: './patient-list.scss',
 })
-export class PatientList {
+export class PatientList implements OnInit, AfterViewInit {
 
-  private patientService = inject(PatientService);
+private patientService = inject(PatientService);
 
-  private preferencesService = inject(PreferencesService);
+private preferencesService = inject(PreferencesService);
 
-  private dialog = inject(MatDialog);
+private dialog = inject(MatDialog);
 
-  pageSize = 10;
+pageSize = 10;
 
- get hasPatients(): boolean {
-  return this.dataSource.data.length > 0;
-} 
+displayedColumns: string[] = [
+'id',
+'name',
+'gender',
+'phone',
+'bloodGroup',
+'status',
+'actions'
+];
 
-deletePatient(id: number): void {
+dataSource = new MatTableDataSource<Patient>();
 
-  const dialogRef = this.dialog.open(DeleteConfirmation);
+@ViewChild(MatPaginator)
+paginator!: MatPaginator;
+
+@ViewChild(MatSort)
+sort!: MatSort;
+
+get hasPatients(): boolean {
+
+return this.dataSource.data.length > 0;
 
 
-  dialogRef.afterClosed().subscribe(result => {
+}
 
-    if (result) {
+ngOnInit(): void {
 
-      this.patientService.deletePatient(id);
+const preferences = this.preferencesService.getPreferences();
 
-      this.dataSource.data = [...this.patientService.getPatients()];
+this.pageSize = preferences.itemsPerPage;
+
+
+this.patientService
+  .patients$
+  .subscribe(patients => {
+
+    this.dataSource.data = patients;
+
+  });
+
+
+this.loadPatients();
+
+
+}
+
+ngAfterViewInit(): void {
+
+const preferences = this.preferencesService.getPreferences();
+
+
+this.paginator.pageSize = preferences.itemsPerPage;
+
+
+this.dataSource.paginator = this.paginator;
+
+this.dataSource.sort = this.sort;
+
+
+}
+
+private loadPatients(): void {
+
+this.patientService.getPatients().subscribe({
+
+    error: error => {
+
+      console.error('Failed to load patients', error);
 
     }
 
   });
 
+
 }
 
-  displayedColumns: string[] = ['id', 'name', 'gender', 'phone', 'bloodGroup', 'status', 'actions'];
+deletePatient(id: number): void {
 
-  dataSource = new MatTableDataSource<Patient>();
-
-  @ViewChild(MatPaginator)
-  paginator!: MatPaginator;
-
-  @ViewChild(MatSort)
-  sort!: MatSort;
+const dialogRef = this.dialog.open(DeleteConfirmation);
 
 
-  ngOnInit() {
+dialogRef
+  .afterClosed()
+  .subscribe(result => {
 
-      const patients = this.patientService.getPatients();
-
-      this.dataSource.data = patients;
-
-      const preferences = this.preferencesService.getPreferences();
-
-      this.pageSize = preferences.itemsPerPage;
-
+    if (!result) {
+      return;
     }
 
-  ngAfterViewInit() {
 
-      const preferences = this.preferencesService.getPreferences();
+    this.patientService.deletePatient(id).subscribe({
 
-      this.paginator.pageSize = preferences.itemsPerPage;
+        error: error => {
 
-      this.dataSource.paginator = this.paginator;
+          console.error('Failed to delete patient', error);
 
-      this.dataSource.sort = this.sort;
+        }
 
-    }
+      });
 
-  applyFilter(event: Event) {
+  });
 
-    const filterValue = (event.target as HTMLInputElement).value;
 
-    this.dataSource.filter =
-      filterValue.trim().toLowerCase();
+}
 
-  }
+applyFilter(event: Event): void {
+
+const filterValue = (event.target as HTMLInputElement).value;
+
+
+this.dataSource.filter = filterValue.trim().toLowerCase();
+
+
+}
 
 }
