@@ -6,6 +6,8 @@ import {
   map,
   tap
 } from 'rxjs';
+import { environment } from '../../../../environments/environment';
+
 
 import { Appointment } from '../models/appointment.model';
 
@@ -16,7 +18,8 @@ export class AppointmentService {
 
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/appointments';
+  private readonly apiUrl = `${environment.apiUrl}/appointments`;
+
 
   private readonly appointmentsSubject = new BehaviorSubject<Appointment[]>([]);
 

@@ -1,6 +1,8 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
+
 
 export interface AuthUser {
   id: number;
@@ -27,7 +29,8 @@ export class AuthService {
   private readonly http = inject(HttpClient);
 
   private readonly storageKey = 'feyaclinix_auth';
-  private readonly apiUrl = 'http://localhost:3000/api';
+  private readonly apiUrl = environment.apiUrl;
+
 
   private readonly currentUserSignal = signal<AuthUser | null>(this.loadUser());
 

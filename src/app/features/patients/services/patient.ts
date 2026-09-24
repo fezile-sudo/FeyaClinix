@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 import { Patient } from '../models/patient.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class PatientService {
 
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/patients';
+  private readonly apiUrl = `${environment.apiUrl}/patients`;
 
   private readonly patientsSubject = new BehaviorSubject<Patient[]>([]);
 
