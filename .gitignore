@@ -8,8 +8,7 @@ out-tsc/
 # Angular cache
 .angular/
 
-# Environment files
-src/environments/*.ts
+
 
 # Logs
 npm-debug.log*
